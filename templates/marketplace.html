@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+
+{% block title %}Marketplace{% endblock %}
+
+{% block content %}
+<section class="py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Page Header -->
+        <div class="mb-10" data-animate>
+            <h1 class="font-display text-4xl font-bold text-white mb-2">Marketplace</h1>
+            <p class="text-slate-400">Discover academic resources available for exchange</p>
+        </div>
+
+        <div class="flex flex-col lg:flex-row gap-8">
+            <!-- ── Sidebar Filters ── -->
+            <aside class="lg:w-72 flex-shrink-0" data-animate>
+                <div class="glass rounded-3xl p-6 sticky top-24">
+                    <h3 class="font-display font-semibold text-white mb-4 flex items-center gap-2">
+                        <i data-lucide="sliders-horizontal" class="w-4 h-4 text-indigo-400"></i>
+                        Filters
+                    </h3>
+
+                    <!-- Search -->
+                    <form method="GET" action="{{ url_for('marketplace') }}" id="filter-form">
+                        <div class="mb-5">
+                            <label class="block text-xs font-medium text-slate-400 mb-2">Search</label>
+                            <div class="relative">
+                                <i data-lucide="search" class="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2"></i>
+                                <input type="text" name="search" value="{{ search }}"
+                                       class="input-field w-full pl-9 pr-4 py-2.5 rounded-xl text-sm text-white placeholder-slate-500"
+                                       placeholder="Search items..." id="marketplace-search">
+                            </div>
+                        </div>
+
+                        <!-- Categories -->
+                        <div class="mb-5">
+                            <label class="block text-xs font-medium text-slate-400 mb-3">Category</label>
+                            <div class="space-y-1">
+                                <a href="{{ url_for('marketplace', search=search, sort=sort) }}"
+                                   class="flex items-center gap-2 px-3 py-2 rounded-xl text-sm transition-all {% if not selected_category %}bg-indigo-500/10 text-indigo-300 border border-indigo-500/20{% else %}text-slate-400 hover:bg-white/5 hover:text-slate-200{% endif %}">
+                                    <span class="text-sm">📋</span>
+                                    <span>All Categories</span>
+                                </a>
+                                {% for cat in categories %}
+                                <a href="{{ url_for('marketplace', category=cat.CategoryID, search=search, sort=sort) }}"
+                                   class="flex items-center justify-between px-3 py-2 rounded-xl text-sm transition-all {% if selected_category == cat.CategoryID %}bg-indigo-500/10 text-indigo-300 border border-indigo-500/20{% else %}text-slate-400 hover:bg-white/5 hover:text-slate-200{% endif %}">
+                                    <span class="flex items-center gap-2">
+                                        <span class="text-sm">{{ cat.Icon }}</span>
+                                        <span>{{ cat.CategoryName }}</span>
+                                    </span>
+                                    <span class="text-xs text-slate-600">{{ cat.items.filter_by(Status='Available').count() }}</span>
+                                </a>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <!-- Sort -->
+                        <div class="mb-5">
+                            <label class="block text-xs font-medium text-slate-400 mb-2">Sort By</label>
+                            <select name="sort" onchange="this.form.submit()"
+                                    class="input-field w-full px-3 py-2.5 rounded-xl text-sm text-white" id="marketplace-sort">
+                                <option value="newest" {% if sort == 'newest' %}selected{% endif %}>Newest First</option>
+                                <option value="oldest" {% if sort == 'oldest' %}selected{% endif %}>Oldest First</option>
+                                <option value="price_low" {% if sort == 'price_low' %}selected{% endif %}>Credits: Low → High</option>
+                                <option value="price_high" {% if sort == 'price_high' %}selected{% endif %}>Credits: High → Low</option>
+                            </select>
+                        </div>
+
+                        <input type="hidden" name="category" value="{{ selected_category or '' }}">
+                        <button type="submit" class="btn-primary w-full py-2.5 rounded-xl text-sm font-medium text-white" id="apply-filters-btn">
+                            <span>Apply Filters</span>
+                        </button>
+                    </form>
+                </div>
+            </aside>
+
+            <!-- ── Items Grid ── -->
+            <div class="flex-1">
+                <!-- Results Count -->
+                <div class="flex items-center justify-between mb-6">
+                    <p class="text-sm text-slate-400">
+                        <span class="text-white font-semibold">{{ items|length }}</span> items found
+                    </p>
+                    {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('new_item') }}" class="btn-primary px-4 py-2 rounded-xl text-sm font-medium text-white flex items-center gap-2" id="list-new-item-btn">
+                        <i data-lucide="plus" class="w-4 h-4"></i>
+                        <span>List Item</span>
+                    </a>
+                    {% endif %}
+                </div>
+
+                {% if items %}
+                <div class="grid sm:grid-cols-2 xl:grid-cols-3 gap-6">
+                    {% for item in items %}
+                    <a href="{{ url_for('item_detail', item_id=item.ItemID) }}" class="glass rounded-3xl overflow-hidden card-hover group" data-animate>
+                        <!-- Item Header -->
+                        <div class="h-36 bg-gradient-to-br from-indigo-500/10 via-purple-500/10 to-pink-500/10 flex items-center justify-center relative overflow-hidden">
+                            <span class="text-5xl group-hover:scale-110 transition-transform duration-500">{{ item.category.Icon }}</span>
+                            <div class="absolute top-3 right-3">
+                                <span class="badge-available px-2 py-1 rounded-lg text-xs font-medium">{{ item.Status }}</span>
+                            </div>
+                            <!-- Condition Badge -->
+                            <div class="absolute top-3 left-3">
+                                <span class="px-2 py-1 rounded-lg text-xs font-medium glass-light text-slate-300">{{ item.Condition }}</span>
+                            </div>
+                        </div>
+
+                        <!-- Item Body -->
+                        <div class="p-5">
+                            <span class="text-xs text-indigo-400 font-medium">{{ item.category.CategoryName }}</span>
+                            <h3 class="font-semibold text-white group-hover:text-indigo-300 transition-colors mt-1 truncate">{{ item.Title }}</h3>
+                            <p class="text-xs text-slate-500 mt-1 line-clamp-2">{{ item.Description or 'No description.' }}</p>
+
+                            <div class="flex items-center justify-between mt-4 pt-4 border-t border-white/5">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-sm">{{ item.owner.Avatar }}</span>
+                                    <span class="text-xs text-slate-400">{{ item.owner.Name.split(' ')[0] }}</span>
+                                </div>
+                                <span class="text-sm font-bold text-emerald-400">💎 {{ item.CreditValue }}</span>
+                            </div>
+                        </div>
+                    </a>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <!-- Empty State -->
+                <div class="glass rounded-3xl p-16 text-center">
+                    <div class="text-6xl mb-4">🔍</div>
+                    <h3 class="font-display text-xl font-bold text-white mb-2">No items found</h3>
+                    <p class="text-sm text-slate-400 mb-6">Try adjusting your filters or search query</p>
+                    <a href="{{ url_for('marketplace') }}" class="btn-secondary px-6 py-2.5 rounded-xl text-sm font-medium text-slate-300 inline-flex items-center gap-2">
+                        <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+                        Clear Filters
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

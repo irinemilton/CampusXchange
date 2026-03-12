@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+
+{% block title %}Register{% endblock %}
+
+{% block content %}
+<section class="min-h-screen flex items-center justify-center py-20 px-4 relative">
+    <!-- Background Effects -->
+    <div class="absolute top-1/4 right-1/4 w-72 h-72 bg-purple-600/10 rounded-full blur-3xl"></div>
+    <div class="absolute bottom-1/4 left-1/4 w-72 h-72 bg-indigo-600/10 rounded-full blur-3xl"></div>
+
+    <div class="w-full max-w-md relative z-10 animate-slide-up">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <a href="{{ url_for('index') }}" class="inline-flex items-center gap-2 mb-6">
+                <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-2xl shadow-lg shadow-indigo-500/25">
+                    ♻️
+                </div>
+            </a>
+            <h1 class="font-display text-3xl font-bold text-white mb-2">Join CampusXchange</h1>
+            <p class="text-sm text-slate-400">Create your account & get <span class="text-emerald-400 font-semibold">100 free credits</span></p>
+        </div>
+
+        <!-- Form Card -->
+        <div class="glass rounded-3xl p-8">
+            <form method="POST" action="{{ url_for('register') }}" class="space-y-5" id="register-form">
+                <!-- Name -->
+                <div>
+                    <label class="block text-sm font-medium text-slate-300 mb-2">Full Name</label>
+                    <div class="relative">
+                        <i data-lucide="user" class="w-4 h-4 text-slate-500 absolute left-4 top-1/2 -translate-y-1/2"></i>
+                        <input type="text" name="name" id="reg-name" required
+                               class="input-field w-full pl-11 pr-4 py-3 rounded-xl text-sm text-white placeholder-slate-500"
+                               placeholder="Your full name">
+                    </div>
+                </div>
+
+                <!-- Email -->
+                <div>
+                    <label class="block text-sm font-medium text-slate-300 mb-2">College Email</label>
+                    <div class="relative">
+                        <i data-lucide="mail" class="w-4 h-4 text-slate-500 absolute left-4 top-1/2 -translate-y-1/2"></i>
+                        <input type="email" name="email" id="reg-email" required
+                               class="input-field w-full pl-11 pr-4 py-3 rounded-xl text-sm text-white placeholder-slate-500"
+                               placeholder="you@campus.edu">
+                    </div>
+                </div>
+
+                <!-- Password -->
+                <div>
+                    <label class="block text-sm font-medium text-slate-300 mb-2">Password</label>
+                    <div class="relative">
+                        <i data-lucide="lock" class="w-4 h-4 text-slate-500 absolute left-4 top-1/2 -translate-y-1/2"></i>
+                        <input type="password" name="password" id="reg-password" required minlength="6"
+                               class="input-field w-full pl-11 pr-4 py-3 rounded-xl text-sm text-white placeholder-slate-500"
+                               placeholder="Minimum 6 characters">
+                    </div>
+                    <!-- Password strength indicator -->
+                    <div class="flex gap-1 mt-2" id="password-strength">
+                        <div class="h-1 flex-1 rounded-full bg-slate-800 transition-colors"></div>
+                        <div class="h-1 flex-1 rounded-full bg-slate-800 transition-colors"></div>
+                        <div class="h-1 flex-1 rounded-full bg-slate-800 transition-colors"></div>
+                        <div class="h-1 flex-1 rounded-full bg-slate-800 transition-colors"></div>
+                    </div>
+                </div>
+
+                <!-- Confirm Password -->
+                <div>
+                    <label class="block text-sm font-medium text-slate-300 mb-2">Confirm Password</label>
+                    <div class="relative">
+                        <i data-lucide="lock" class="w-4 h-4 text-slate-500 absolute left-4 top-1/2 -translate-y-1/2"></i>
+                        <input type="password" name="confirm_password" id="reg-confirm" required
+                               class="input-field w-full pl-11 pr-4 py-3 rounded-xl text-sm text-white placeholder-slate-500"
+                               placeholder="Confirm your password">
+                    </div>
+                </div>
+
+                <!-- Submit -->
+                <button type="submit" class="btn-primary w-full py-3.5 rounded-xl text-sm font-semibold text-white flex items-center justify-center gap-2" id="register-submit">
+                    <span>Create Account</span>
+                    <i data-lucide="sparkles" class="w-4 h-4"></i>
+                </button>
+            </form>
+
+            <!-- Welcome Bonus -->
+            <div class="mt-5 p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+                <div class="flex items-center gap-3">
+                    <span class="text-2xl">🎁</span>
+                    <div>
+                        <p class="text-sm font-medium text-emerald-300">Welcome Bonus</p>
+                        <p class="text-xs text-slate-400">New accounts receive 100 credits to start trading!</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Login Link -->
+            <p class="text-center text-sm text-slate-400 mt-6">
+                Already have an account?
+                <a href="{{ url_for('login') }}" class="text-indigo-400 hover:text-indigo-300 font-medium transition-colors">Sign in</a>
+            </p>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Password strength indicator
+    document.getElementById('reg-password').addEventListener('input', function() {
+        const bars = document.querySelectorAll('#password-strength div');
+        const val = this.value;
+        let strength = 0;
+
+        if (val.length >= 6) strength++;
+        if (val.length >= 8) strength++;
+        if (/[A-Z]/.test(val) && /[a-z]/.test(val)) strength++;
+        if (/[0-9]/.test(val) || /[^A-Za-z0-9]/.test(val)) strength++;
+
+        const colors = ['bg-red-500', 'bg-amber-500', 'bg-yellow-400', 'bg-emerald-500'];
+        bars.forEach((bar, i) => {
+            bar.className = 'h-1 flex-1 rounded-full transition-colors ' +
+                (i < strength ? colors[strength - 1] : 'bg-slate-800');
+        });
+    });
+
+    // Password match validation
+    document.getElementById('register-form').addEventListener('submit', function(e) {
+        const pass = document.getElementById('reg-password').value;
+        const confirm = document.getElementById('reg-confirm').value;
+        if (pass !== confirm) {
+            e.preventDefault();
+            document.getElementById('reg-confirm').classList.add('ring-2', 'ring-red-500/50');
+            alert('Passwords do not match!');
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,185 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ item.Title }}{% endblock %}
+
+{% block content %}
+<section class="py-12">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Breadcrumb -->
+        <nav class="flex items-center gap-2 text-sm text-slate-500 mb-8" data-animate>
+            <a href="{{ url_for('marketplace') }}" class="hover:text-indigo-400 transition-colors">Marketplace</a>
+            <i data-lucide="chevron-right" class="w-3 h-3"></i>
+            <a href="{{ url_for('marketplace', category=item.CategoryID) }}" class="hover:text-indigo-400 transition-colors">{{ item.category.CategoryName }}</a>
+            <i data-lucide="chevron-right" class="w-3 h-3"></i>
+            <span class="text-slate-300">{{ item.Title }}</span>
+        </nav>
+
+        <div class="grid lg:grid-cols-5 gap-8">
+            <!-- ── Item Image/Visual ── -->
+            <div class="lg:col-span-2" data-animate>
+                <div class="glass rounded-3xl overflow-hidden aspect-square flex items-center justify-center relative">
+                    <div class="absolute inset-0 bg-gradient-to-br from-indigo-500/10 via-purple-500/10 to-pink-500/10"></div>
+                    <span class="text-8xl relative z-10">{{ item.category.Icon }}</span>
+
+                    <!-- Status Overlay -->
+                    {% if item.Status != 'Available' %}
+                    <div class="absolute inset-0 bg-black/60 flex items-center justify-center z-20">
+                        <span class="px-4 py-2 rounded-2xl font-semibold text-lg
+                            {% if item.Status == 'Requested' %}badge-requested
+                            {% elif item.Status == 'Exchanged' %}badge-exchanged
+                            {% endif %}">
+                            {{ item.Status }}
+                        </span>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- ── Item Details ── -->
+            <div class="lg:col-span-3 space-y-6" data-animate>
+                <!-- Category & Condition -->
+                <div class="flex items-center gap-3">
+                    <span class="px-3 py-1 rounded-lg bg-indigo-500/10 text-indigo-400 text-xs font-medium border border-indigo-500/20">
+                        {{ item.category.CategoryName }}
+                    </span>
+                    <span class="px-3 py-1 rounded-lg glass-light text-slate-300 text-xs font-medium">
+                        {{ item.Condition }}
+                    </span>
+                    <span class="px-3 py-1 rounded-lg
+                        {% if item.Status == 'Available' %}badge-available
+                        {% elif item.Status == 'Requested' %}badge-requested
+                        {% else %}badge-exchanged
+                        {% endif %} text-xs font-medium">
+                        {{ item.Status }}
+                    </span>
+                </div>
+
+                <!-- Title -->
+                <h1 class="font-display text-3xl sm:text-4xl font-bold text-white">{{ item.Title }}</h1>
+
+                <!-- Credit Value -->
+                <div class="flex items-center gap-4">
+                    <div class="credit-chip px-5 py-3 rounded-2xl flex items-center gap-3">
+                        <span class="text-3xl">💎</span>
+                        <div>
+                            <p class="text-2xl font-display font-bold text-emerald-400">{{ item.CreditValue }}</p>
+                            <p class="text-xs text-slate-400">Virtual Credits</p>
+                        </div>
+                    </div>
+
+                    {% if current_user.is_authenticated %}
+                    <div class="glass-light px-4 py-3 rounded-2xl">
+                        <p class="text-xs text-slate-400">Your Balance</p>
+                        <p class="text-lg font-bold {% if current_user.CreditBalance >= item.CreditValue %}text-emerald-400{% else %}text-red-400{% endif %}">
+                            {{ current_user.CreditBalance }} credits
+                        </p>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Description -->
+                <div class="glass rounded-2xl p-5">
+                    <h3 class="font-semibold text-white mb-2 flex items-center gap-2">
+                        <i data-lucide="file-text" class="w-4 h-4 text-indigo-400"></i>
+                        Description
+                    </h3>
+                    <p class="text-sm text-slate-400 leading-relaxed">
+                        {{ item.Description or 'No description provided for this item.' }}
+                    </p>
+                </div>
+
+                <!-- Owner Info -->
+                <div class="glass rounded-2xl p-5">
+                    <h3 class="font-semibold text-white mb-3 flex items-center gap-2">
+                        <i data-lucide="user" class="w-4 h-4 text-indigo-400"></i>
+                        Listed By
+                    </h3>
+                    <div class="flex items-center gap-4">
+                        <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500/20 to-purple-500/20 flex items-center justify-center text-3xl">
+                            {{ item.owner.Avatar }}
+                        </div>
+                        <div>
+                            <p class="font-semibold text-white">{{ item.owner.Name }}</p>
+                            <p class="text-xs text-slate-400">{{ item.owner.Email }}</p>
+                            <p class="text-xs text-slate-500 mt-1">Member since {{ item.owner.JoinDate.strftime('%b %Y') if item.owner.JoinDate else 'Recently' }}</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Item Meta -->
+                <div class="grid grid-cols-3 gap-4">
+                    <div class="glass rounded-2xl p-4 text-center">
+                        <i data-lucide="calendar" class="w-5 h-5 text-indigo-400 mx-auto mb-2"></i>
+                        <p class="text-xs text-slate-400">Listed</p>
+                        <p class="text-sm font-medium text-white">{{ item.ListedDate.strftime('%b %d, %Y') if item.ListedDate else 'Today' }}</p>
+                    </div>
+                    <div class="glass rounded-2xl p-4 text-center">
+                        <i data-lucide="tag" class="w-5 h-5 text-purple-400 mx-auto mb-2"></i>
+                        <p class="text-xs text-slate-400">Category</p>
+                        <p class="text-sm font-medium text-white">{{ item.category.CategoryName }}</p>
+                    </div>
+                    <div class="glass rounded-2xl p-4 text-center">
+                        <i data-lucide="star" class="w-5 h-5 text-amber-400 mx-auto mb-2"></i>
+                        <p class="text-xs text-slate-400">Condition</p>
+                        <p class="text-sm font-medium text-white">{{ item.Condition }}</p>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                {% if current_user.is_authenticated %}
+                    {% if item.Status == 'Available' and item.Owner_StudentID != current_user.StudentID %}
+                    <form method="POST" action="{{ url_for('request_exchange', item_id=item.ItemID) }}">
+                        {% if current_user.CreditBalance >= item.CreditValue %}
+                        <button type="submit" class="btn-primary w-full py-4 rounded-2xl text-sm font-semibold text-white flex items-center justify-center gap-2 group" id="request-exchange-btn">
+                            <span>Request Exchange — {{ item.CreditValue }} Credits</span>
+                            <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+                        </button>
+                        {% else %}
+                        <button type="button" disabled class="w-full py-4 rounded-2xl text-sm font-semibold bg-slate-800 text-slate-500 cursor-not-allowed flex items-center justify-center gap-2">
+                            <i data-lucide="alert-circle" class="w-4 h-4"></i>
+                            <span>Insufficient Credits (Need {{ item.CreditValue - current_user.CreditBalance }} more)</span>
+                        </button>
+                        {% endif %}
+                    </form>
+                    {% elif item.Owner_StudentID == current_user.StudentID %}
+                    <div class="p-4 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 text-center">
+                        <p class="text-sm text-indigo-300 flex items-center justify-center gap-2">
+                            <i data-lucide="info" class="w-4 h-4"></i>
+                            This is your listing
+                        </p>
+                    </div>
+                    {% endif %}
+                {% else %}
+                <a href="{{ url_for('login') }}" class="btn-primary w-full py-4 rounded-2xl text-sm font-semibold text-white flex items-center justify-center gap-2">
+                    <span>Sign in to Request Exchange</span>
+                    <i data-lucide="log-in" class="w-4 h-4"></i>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- ═══ Related Items ═══ -->
+        {% if related_items %}
+        <div class="mt-16">
+            <h2 class="font-display text-2xl font-bold text-white mb-6">Related Items</h2>
+            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                {% for ritem in related_items %}
+                <a href="{{ url_for('item_detail', item_id=ritem.ItemID) }}" class="glass rounded-3xl overflow-hidden card-hover group">
+                    <div class="h-28 bg-gradient-to-br from-indigo-500/10 via-purple-500/10 to-pink-500/10 flex items-center justify-center">
+                        <span class="text-4xl group-hover:scale-110 transition-transform">{{ ritem.category.Icon }}</span>
+                    </div>
+                    <div class="p-4">
+                        <h3 class="font-semibold text-white text-sm truncate group-hover:text-indigo-300 transition-colors">{{ ritem.Title }}</h3>
+                        <div class="flex items-center justify-between mt-2">
+                            <span class="text-xs text-slate-400">{{ ritem.Condition }}</span>
+                            <span class="text-sm font-bold text-emerald-400">💎 {{ ritem.CreditValue }}</span>
+                        </div>
+                    </div>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

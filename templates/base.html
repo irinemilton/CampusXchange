@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="CampusXchange - A peer-to-peer circular economy platform for college students to trade academic resources sustainably.">
+    <title>{% block title %}CampusXchange{% endblock %} | Campus Barter Exchange</title>
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            200: '#c7d2fe',
+                            300: '#a5b4fc',
+                            400: '#818cf8',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            800: '#3730a3',
+                            900: '#312e81',
+                            950: '#1e1b4b',
+                        },
+                        accent: {
+                            50: '#fdf4ff',
+                            100: '#fae8ff',
+                            200: '#f5d0fe',
+                            300: '#f0abfc',
+                            400: '#e879f9',
+                            500: '#d946ef',
+                            600: '#c026d3',
+                            700: '#a21caf',
+                            800: '#86198f',
+                            900: '#701a75',
+                        },
+                        surface: {
+                            50: '#f8fafc',
+                            100: '#f1f5f9',
+                            200: '#e2e8f0',
+                            700: '#334155',
+                            800: '#1e293b',
+                            900: '#0f172a',
+                            950: '#020617',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                        display: ['Outfit', 'system-ui', 'sans-serif'],
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'glow': 'glow 2s ease-in-out infinite alternate',
+                        'slide-up': 'slideUp 0.5s ease-out',
+                        'slide-down': 'slideDown 0.3s ease-out',
+                        'fade-in': 'fadeIn 0.5s ease-out',
+                        'scale-in': 'scaleIn 0.3s ease-out',
+                        'shimmer': 'shimmer 2s linear infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-20px)' },
+                        },
+                        glow: {
+                            '0%': { boxShadow: '0 0 5px rgba(99, 102, 241, 0.5)' },
+                            '100%': { boxShadow: '0 0 20px rgba(99, 102, 241, 0.8), 0 0 60px rgba(99, 102, 241, 0.3)' },
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(30px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        },
+                        slideDown: {
+                            '0%': { transform: 'translateY(-10px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        scaleIn: {
+                            '0%': { transform: 'scale(0.95)', opacity: '0' },
+                            '100%': { transform: 'scale(1)', opacity: '1' },
+                        },
+                        shimmer: {
+                            '0%': { backgroundPosition: '-200% 0' },
+                            '100%': { backgroundPosition: '200% 0' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        /* ── Global Styles ─── */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: #020617;
+            color: #e2e8f0;
+            overflow-x: hidden;
+        }
+
+        /* ── Scrollbar ─── */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #4f46e5; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #6366f1; }
+
+        /* ── Glassmorphism ─── */
+        .glass {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(99, 102, 241, 0.15);
+        }
+
+        .glass-light {
+            background: rgba(30, 41, 59, 0.5);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(99, 102, 241, 0.1);
+        }
+
+        /* ── Gradient Text ─── */
+        .gradient-text {
+            background: linear-gradient(135deg, #818cf8, #c084fc, #f472b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .gradient-text-alt {
+            background: linear-gradient(135deg, #6ee7b7, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* ── Gradient Borders ─── */
+        .gradient-border {
+            position: relative;
+        }
+        .gradient-border::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            padding: 1px;
+            background: linear-gradient(135deg, #6366f1, #a855f7, #ec4899);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+
+        /* ── Animated Background ─── */
+        .bg-mesh {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background:
+                radial-gradient(ellipse at 20% 50%, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(168, 85, 247, 0.06) 0%, transparent 50%),
+                radial-gradient(ellipse at 40% 80%, rgba(236, 72, 153, 0.04) 0%, transparent 50%),
+                #020617;
+        }
+
+        /* ── Card Hover ─── */
+        .card-hover {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .card-hover:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 60px rgba(99, 102, 241, 0.15),
+                        0 0 0 1px rgba(99, 102, 241, 0.2);
+        }
+
+        /* ── Button Styles ─── */
+        .btn-primary {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .btn-primary:hover::before {
+            opacity: 1;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 40px rgba(99, 102, 241, 0.4);
+        }
+        .btn-primary span {
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn-secondary {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            transition: all 0.3s ease;
+        }
+        .btn-secondary:hover {
+            background: rgba(99, 102, 241, 0.1);
+            border-color: rgba(99, 102, 241, 0.4);
+            transform: translateY(-2px);
+        }
+
+        /* ── Status Badges ─── */
+        .badge-available {
+            background: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+        .badge-requested {
+            background: rgba(245, 158, 11, 0.15);
+            color: #fbbf24;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+        .badge-exchanged {
+            background: rgba(99, 102, 241, 0.15);
+            color: #818cf8;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+        }
+        .badge-pending {
+            background: rgba(245, 158, 11, 0.15);
+            color: #fbbf24;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+        .badge-completed {
+            background: rgba(16, 185, 129, 0.15);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+        .badge-cancelled {
+            background: rgba(239, 68, 68, 0.15);
+            color: #f87171;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        /* ── Input Styles ─── */
+        .input-field {
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(99, 102, 241, 0.15);
+            transition: all 0.3s ease;
+        }
+        .input-field:focus {
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+            outline: none;
+        }
+
+        /* ── Floating Particles ─── */
+        .particle {
+            position: fixed;
+            border-radius: 50%;
+            pointer-events: none;
+            animation: float 8s ease-in-out infinite;
+        }
+
+        /* ── Toast Notification ─── */
+        .toast {
+            animation: slideDown 0.3s ease-out, fadeIn 0.3s ease-out;
+        }
+
+        /* ── Nav Active ─── */
+        .nav-link {
+            position: relative;
+            transition: color 0.3s ease;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #6366f1, #a855f7);
+            border-radius: 1px;
+            transition: width 0.3s ease;
+        }
+        .nav-link:hover::after,
+        .nav-link.active::after {
+            width: 100%;
+        }
+
+        /* ── Credit Chip ─── */
+        .credit-chip {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(99, 102, 241, 0.15));
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        /* ── Pulse Ring ─── */
+        @keyframes pulse-ring {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
+        .pulse-ring::before {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border: 2px solid #10b981;
+            border-radius: inherit;
+            animation: pulse-ring 2s ease-out infinite;
+        }
+    </style>
+
+    {% block head %}{% endblock %}
+</head>
+<body class="min-h-screen">
+    <!-- Background Mesh -->
+    <div class="bg-mesh"></div>
+
+    <!-- Floating particles -->
+    <div class="particle w-1 h-1 bg-indigo-500/20 top-[20%] left-[10%]" style="animation-delay: 0s;"></div>
+    <div class="particle w-2 h-2 bg-purple-500/15 top-[60%] left-[80%]" style="animation-delay: 2s;"></div>
+    <div class="particle w-1.5 h-1.5 bg-pink-500/10 top-[80%] left-[30%]" style="animation-delay: 4s;"></div>
+    <div class="particle w-1 h-1 bg-indigo-400/20 top-[40%] left-[60%]" style="animation-delay: 1s;"></div>
+
+    <!-- ═══ NAVIGATION ═══ -->
+    <nav id="main-nav" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16 lg:h-20">
+                <!-- Logo -->
+                <a href="{{ url_for('index') }}" class="flex items-center gap-3 group">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-indigo-500/25 group-hover:shadow-indigo-500/40 transition-shadow">
+                        ♻️
+                    </div>
+                    <span class="font-display font-bold text-xl tracking-tight">
+                        <span class="text-white">Campus</span><span class="gradient-text">Xchange</span>
+                    </span>
+                </a>
+
+                <!-- Desktop Nav Links -->
+                <div class="hidden md:flex items-center gap-1">
+                    <a href="{{ url_for('index') }}" class="nav-link px-4 py-2 text-sm font-medium text-slate-300 hover:text-white rounded-lg hover:bg-white/5">Home</a>
+                    <a href="{{ url_for('marketplace') }}" class="nav-link px-4 py-2 text-sm font-medium text-slate-300 hover:text-white rounded-lg hover:bg-white/5">Marketplace</a>
+                    {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('dashboard') }}" class="nav-link px-4 py-2 text-sm font-medium text-slate-300 hover:text-white rounded-lg hover:bg-white/5">Dashboard</a>
+                    <a href="{{ url_for('transactions') }}" class="nav-link px-4 py-2 text-sm font-medium text-slate-300 hover:text-white rounded-lg hover:bg-white/5">History</a>
+                    {% endif %}
+                </div>
+
+                <!-- Right Side -->
+                <div class="flex items-center gap-3">
+                    {% if current_user.is_authenticated %}
+                    <!-- Credit Balance -->
+                    <div class="credit-chip px-3 py-1.5 rounded-full flex items-center gap-2 text-sm">
+                        <span class="text-emerald-400 font-semibold">💎 {{ current_user.CreditBalance }}</span>
+                        <span class="text-slate-400 text-xs">credits</span>
+                    </div>
+
+                    <!-- User Menu -->
+                    <div class="relative" x-data="{ open: false }">
+                        <button onclick="toggleUserMenu()" class="flex items-center gap-2 px-3 py-1.5 rounded-xl glass-light hover:bg-white/10 transition-all" id="user-menu-btn">
+                            <span class="text-lg">{{ current_user.Avatar }}</span>
+                            <span class="text-sm font-medium text-slate-200 hidden sm:block">{{ current_user.Name.split(' ')[0] }}</span>
+                            <i data-lucide="chevron-down" class="w-4 h-4 text-slate-400"></i>
+                        </button>
+                        <div id="user-dropdown" class="hidden absolute right-0 top-full mt-2 w-56 glass rounded-2xl shadow-2xl shadow-black/50 p-2 animate-scale-in">
+                            <div class="px-3 py-2 border-b border-white/10 mb-2">
+                                <p class="text-sm font-semibold text-white">{{ current_user.Name }}</p>
+                                <p class="text-xs text-slate-400">{{ current_user.Email }}</p>
+                            </div>
+                            <a href="{{ url_for('dashboard') }}" class="flex items-center gap-3 px-3 py-2 text-sm text-slate-300 hover:text-white hover:bg-white/5 rounded-xl transition-all">
+                                <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Dashboard
+                            </a>
+                            <a href="{{ url_for('new_item') }}" class="flex items-center gap-3 px-3 py-2 text-sm text-slate-300 hover:text-white hover:bg-white/5 rounded-xl transition-all">
+                                <i data-lucide="plus-circle" class="w-4 h-4"></i> List Item
+                            </a>
+                            <a href="{{ url_for('transactions') }}" class="flex items-center gap-3 px-3 py-2 text-sm text-slate-300 hover:text-white hover:bg-white/5 rounded-xl transition-all">
+                                <i data-lucide="receipt" class="w-4 h-4"></i> Transactions
+                            </a>
+                            <hr class="border-white/10 my-2">
+                            <a href="{{ url_for('logout') }}" class="flex items-center gap-3 px-3 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-xl transition-all">
+                                <i data-lucide="log-out" class="w-4 h-4"></i> Sign Out
+                            </a>
+                        </div>
+                    </div>
+                    {% else %}
+                    <a href="{{ url_for('login') }}" class="btn-secondary px-5 py-2 rounded-xl text-sm font-medium text-slate-200">
+                        <span>Sign In</span>
+                    </a>
+                    <a href="{{ url_for('register') }}" class="btn-primary px-5 py-2 rounded-xl text-sm font-medium text-white">
+                        <span>Get Started</span>
+                    </a>
+                    {% endif %}
+                </div>
+
+                <!-- Mobile Menu Button -->
+                <button onclick="toggleMobileMenu()" class="md:hidden p-2 text-slate-400 hover:text-white" id="mobile-menu-btn">
+                    <i data-lucide="menu" class="w-5 h-5"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden glass border-t border-white/10">
+            <div class="px-4 py-3 space-y-1">
+                <a href="{{ url_for('index') }}" class="block px-3 py-2 text-sm text-slate-300 hover:text-white hover:bg-white/5 rounded-lg">Home</a>
+                <a href="{{ url_for('marketplace') }}" class="block px-3 py-2 text-sm text-slate-300 hover:text-white hover:bg-white/5 rounded-lg">Marketplace</a>
+                {% if current_user.is_authenticated %}
+                <a href="{{ url_for('dashboard') }}" class="block px-3 py-2 text-sm text-slate-300 hover:text-white hover:bg-white/5 rounded-lg">Dashboard</a>
+                <a href="{{ url_for('transactions') }}" class="block px-3 py-2 text-sm text-slate-300 hover:text-white hover:bg-white/5 rounded-lg">History</a>
+                <a href="{{ url_for('new_item') }}" class="block px-3 py-2 text-sm text-slate-300 hover:text-white hover:bg-white/5 rounded-lg">List Item</a>
+                <a href="{{ url_for('logout') }}" class="block px-3 py-2 text-sm text-red-400 hover:bg-red-500/10 rounded-lg">Sign Out</a>
+                {% else %}
+                <a href="{{ url_for('login') }}" class="block px-3 py-2 text-sm text-slate-300 hover:text-white hover:bg-white/5 rounded-lg">Sign In</a>
+                <a href="{{ url_for('register') }}" class="block px-3 py-2 text-sm text-indigo-400 hover:bg-indigo-500/10 rounded-lg">Get Started</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <!-- ═══ FLASH MESSAGES ═══ -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="fixed top-20 right-4 z-50 space-y-3 w-96 max-w-[calc(100vw-2rem)]" id="flash-container">
+        {% for category, message in messages %}
+        <div class="toast glass rounded-2xl p-4 flex items-start gap-3 shadow-2xl shadow-black/50" data-toast>
+            {% if category == 'success' %}
+            <div class="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center flex-shrink-0">
+                <i data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i>
+            </div>
+            {% elif category == 'error' %}
+            <div class="w-8 h-8 rounded-full bg-red-500/20 flex items-center justify-center flex-shrink-0">
+                <i data-lucide="x-circle" class="w-4 h-4 text-red-400"></i>
+            </div>
+            {% elif category == 'warning' %}
+            <div class="w-8 h-8 rounded-full bg-amber-500/20 flex items-center justify-center flex-shrink-0">
+                <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-400"></i>
+            </div>
+            {% else %}
+            <div class="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center flex-shrink-0">
+                <i data-lucide="info" class="w-4 h-4 text-blue-400"></i>
+            </div>
+            {% endif %}
+            <div class="flex-1">
+                <p class="text-sm text-slate-200">{{ message }}</p>
+            </div>
+            <button onclick="this.closest('[data-toast]').remove()" class="text-slate-500 hover:text-slate-300 flex-shrink-0">
+                <i data-lucide="x" class="w-4 h-4"></i>
+            </button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
+    <!-- ═══ MAIN CONTENT ═══ -->
+    <main class="pt-16 lg:pt-20">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- ═══ FOOTER ═══ -->
+    <footer class="mt-auto border-t border-white/5">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <!-- Brand -->
+                <div class="md:col-span-2">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold text-lg">
+                            ♻️
+                        </div>
+                        <span class="font-display font-bold text-xl text-white">CampusXchange</span>
+                    </div>
+                    <p class="text-sm text-slate-400 max-w-md leading-relaxed">
+                        A sustainable peer-to-peer platform promoting the circular economy within campus communities.
+                        Trade academic resources using virtual credits — zero cash, zero waste.
+                    </p>
+                    <div class="flex items-center gap-3 mt-6">
+                        <span class="text-xs text-slate-500">Built with</span>
+                        <span class="px-2 py-1 text-xs rounded-md bg-slate-800 text-slate-400">Flask</span>
+                        <span class="px-2 py-1 text-xs rounded-md bg-slate-800 text-slate-400">MySQL</span>
+                        <span class="px-2 py-1 text-xs rounded-md bg-slate-800 text-slate-400">Tailwind CSS</span>
+                    </div>
+                </div>
+
+                <!-- Quick Links -->
+                <div>
+                    <h3 class="font-display font-semibold text-white mb-4">Platform</h3>
+                    <ul class="space-y-2">
+                        <li><a href="{{ url_for('marketplace') }}" class="text-sm text-slate-400 hover:text-indigo-400 transition-colors">Marketplace</a></li>
+                        <li><a href="{{ url_for('register') }}" class="text-sm text-slate-400 hover:text-indigo-400 transition-colors">Register</a></li>
+                        <li><a href="{{ url_for('login') }}" class="text-sm text-slate-400 hover:text-indigo-400 transition-colors">Sign In</a></li>
+                    </ul>
+                </div>
+
+                <!-- DBMS Concepts -->
+                <div>
+                    <h3 class="font-display font-semibold text-white mb-4">DBMS Concepts</h3>
+                    <ul class="space-y-2">
+                        <li class="text-sm text-slate-400">ER Modeling</li>
+                        <li class="text-sm text-slate-400">Normalization</li>
+                        <li class="text-sm text-slate-400">ACID Transactions</li>
+                        <li class="text-sm text-slate-400">Referential Integrity</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="border-t border-white/5 mt-10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
+                <p class="text-xs text-slate-500">© 2026 CampusXchange — Campus Circular Economy & Barter Exchange</p>
+                <p class="text-xs text-slate-600">DBMS Project • Academic Use Only</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ═══ SCRIPTS ═══ -->
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Nav scroll effect
+        const nav = document.getElementById('main-nav');
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 20) {
+                nav.classList.add('glass', 'shadow-lg', 'shadow-black/20');
+            } else {
+                nav.classList.remove('glass', 'shadow-lg', 'shadow-black/20');
+            }
+        });
+
+        // User dropdown toggle
+        function toggleUserMenu() {
+            const dropdown = document.getElementById('user-dropdown');
+            dropdown.classList.toggle('hidden');
+        }
+
+        // Close dropdown on outside click
+        document.addEventListener('click', (e) => {
+            const btn = document.getElementById('user-menu-btn');
+            const dropdown = document.getElementById('user-dropdown');
+            if (btn && dropdown && !btn.contains(e.target) && !dropdown.contains(e.target)) {
+                dropdown.classList.add('hidden');
+            }
+        });
+
+        // Mobile menu toggle
+        function toggleMobileMenu() {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
+        }
+
+        // Auto-dismiss toasts
+        setTimeout(() => {
+            document.querySelectorAll('[data-toast]').forEach((toast, i) => {
+                setTimeout(() => {
+                    toast.style.transition = 'all 0.3s ease';
+                    toast.style.opacity = '0';
+                    toast.style.transform = 'translateX(100%)';
+                    setTimeout(() => toast.remove(), 300);
+                }, i * 200);
+            });
+        }, 4000);
+
+        // Intersection Observer for animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animate-slide-up');
+                    entry.target.style.opacity = '1';
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('[data-animate]').forEach(el => {
+            el.style.opacity = '0';
+            observer.observe(el);
+        });
+    </script>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>

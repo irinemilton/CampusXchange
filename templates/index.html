@@ -1,0 +1,333 @@
+{% extends 'base.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<!-- ═══ HERO SECTION ═══ -->
+<section class="relative min-h-screen flex items-center overflow-hidden">
+    <!-- Hero Background Effects -->
+    <div class="absolute inset-0 z-0">
+        <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-indigo-600/10 rounded-full blur-3xl animate-float"></div>
+        <div class="absolute bottom-1/4 right-1/4 w-80 h-80 bg-purple-600/10 rounded-full blur-3xl animate-float" style="animation-delay: 3s;"></div>
+        <div class="absolute top-1/2 left-1/2 w-64 h-64 bg-pink-600/5 rounded-full blur-3xl animate-float" style="animation-delay: 5s;"></div>
+    </div>
+
+    <!-- Grid Lines Background -->
+    <div class="absolute inset-0 z-0 opacity-5">
+        <div class="h-full w-full" style="background-image: linear-gradient(rgba(99,102,241,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(99,102,241,0.3) 1px, transparent 1px); background-size: 60px 60px;"></div>
+    </div>
+
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+        <div class="grid lg:grid-cols-2 gap-16 items-center">
+            <!-- Left: Hero Content -->
+            <div class="space-y-8" data-animate>
+                <!-- Badge -->
+                <div class="inline-flex items-center gap-2 px-4 py-1.5 glass rounded-full text-xs font-medium text-indigo-300 animate-fade-in">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    Campus Circular Economy Platform
+                </div>
+
+                <!-- Headline -->
+                <h1 class="font-display text-5xl sm:text-6xl lg:text-7xl font-black leading-[1.1] tracking-tight">
+                    <span class="text-white">Trade Smart.</span><br>
+                    <span class="gradient-text">Waste Nothing.</span><br>
+                    <span class="text-slate-400 text-4xl sm:text-5xl lg:text-6xl">Earn Credits.</span>
+                </h1>
+
+                <!-- Description -->
+                <p class="text-lg text-slate-400 max-w-lg leading-relaxed">
+                    A peer-to-peer barter exchange where students swap textbooks, electronics, and lab gear
+                    using virtual credits. <span class="text-indigo-400">Zero cash. Zero waste.</span>
+                </p>
+
+                <!-- CTA Buttons -->
+                <div class="flex flex-wrap gap-4">
+                    <a href="{{ url_for('register') }}" class="btn-primary px-8 py-3.5 rounded-2xl text-sm font-semibold text-white flex items-center gap-2 group">
+                        <span>Start Trading</span>
+                        <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+                    </a>
+                    <a href="{{ url_for('marketplace') }}" class="btn-secondary px-8 py-3.5 rounded-2xl text-sm font-semibold text-slate-300 flex items-center gap-2">
+                        <i data-lucide="compass" class="w-4 h-4"></i>
+                        <span>Browse Items</span>
+                    </a>
+                </div>
+
+                <!-- Trust Indicators -->
+                <div class="flex items-center gap-8 pt-4">
+                    <div class="text-center">
+                        <p class="font-display text-2xl font-bold text-white" id="counter-students">{{ stats.students }}</p>
+                        <p class="text-xs text-slate-500">Students</p>
+                    </div>
+                    <div class="w-px h-10 bg-white/10"></div>
+                    <div class="text-center">
+                        <p class="font-display text-2xl font-bold text-white" id="counter-items">{{ stats.items }}</p>
+                        <p class="text-xs text-slate-500">Items Listed</p>
+                    </div>
+                    <div class="w-px h-10 bg-white/10"></div>
+                    <div class="text-center">
+                        <p class="font-display text-2xl font-bold text-white" id="counter-trades">{{ stats.exchanges }}</p>
+                        <p class="text-xs text-slate-500">Exchanges</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right: Floating Cards -->
+            <div class="hidden lg:block relative" data-animate>
+                <div class="relative w-full h-[500px]">
+                    <!-- Floating Item Cards -->
+                    {% for item in items[:3] %}
+                    <div class="absolute glass rounded-3xl p-5 w-72 card-hover animate-float" style="
+                        {% if loop.index == 1 %}top: 0; right: 0; animation-delay: 0s;
+                        {% elif loop.index == 2 %}top: 40%; left: 0; animation-delay: 2s;
+                        {% elif loop.index == 3 %}bottom: 0; right: 10%; animation-delay: 4s;
+                        {% endif %}
+                    ">
+                        <div class="flex items-start gap-3 mb-3">
+                            <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500/20 to-purple-500/20 flex items-center justify-center text-2xl">
+                                {{ item.category.Icon }}
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <h3 class="font-semibold text-white text-sm truncate">{{ item.Title }}</h3>
+                                <p class="text-xs text-slate-400">{{ item.category.CategoryName }}</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between">
+                            <span class="px-2 py-1 rounded-lg badge-available text-xs font-medium">Available</span>
+                            <span class="text-sm font-bold text-emerald-400">💎 {{ item.CreditValue }}</span>
+                        </div>
+                    </div>
+                    {% endfor %}
+
+                    <!-- Decorative Elements -->
+                    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 rounded-full border border-indigo-500/20 animate-pulse"></div>
+                    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-60 h-60 rounded-full border border-purple-500/10"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scroll indicator -->
+    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
+        <i data-lucide="chevrons-down" class="w-5 h-5 text-slate-500"></i>
+    </div>
+</section>
+
+<!-- ═══ HOW IT WORKS ═══ -->
+<section class="py-24 relative">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Section Header -->
+        <div class="text-center mb-16" data-animate>
+            <span class="px-3 py-1 text-xs font-medium text-indigo-400 glass rounded-full">How It Works</span>
+            <h2 class="font-display text-4xl sm:text-5xl font-bold text-white mt-4 mb-4">
+                Circular Economy in <span class="gradient-text">3 Steps</span>
+            </h2>
+            <p class="text-slate-400 max-w-2xl mx-auto">
+                Our credit-based system eliminates the need for cash transactions while promoting sustainable resource sharing.
+            </p>
+        </div>
+
+        <!-- Steps -->
+        <div class="grid md:grid-cols-3 gap-8">
+            <!-- Step 1 -->
+            <div class="relative glass rounded-3xl p-8 card-hover group" data-animate>
+                <div class="absolute -top-4 -left-4 w-10 h-10 rounded-2xl bg-gradient-to-br from-indigo-500 to-indigo-600 flex items-center justify-center text-white font-display font-bold text-sm shadow-lg shadow-indigo-500/30">
+                    01
+                </div>
+                <div class="w-16 h-16 rounded-2xl bg-indigo-500/10 flex items-center justify-center mb-6 group-hover:bg-indigo-500/20 transition-colors">
+                    <i data-lucide="package-plus" class="w-8 h-8 text-indigo-400"></i>
+                </div>
+                <h3 class="font-display text-xl font-bold text-white mb-3">List Your Items</h3>
+                <p class="text-sm text-slate-400 leading-relaxed">
+                    Upload unused textbooks, electronics, or lab equipment with a credit value. Your items become available to the entire campus community.
+                </p>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="relative glass rounded-3xl p-8 card-hover group" data-animate>
+                <div class="absolute -top-4 -left-4 w-10 h-10 rounded-2xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center text-white font-display font-bold text-sm shadow-lg shadow-purple-500/30">
+                    02
+                </div>
+                <div class="w-16 h-16 rounded-2xl bg-purple-500/10 flex items-center justify-center mb-6 group-hover:bg-purple-500/20 transition-colors">
+                    <i data-lucide="repeat" class="w-8 h-8 text-purple-400"></i>
+                </div>
+                <h3 class="font-display text-xl font-bold text-white mb-3">Request & Exchange</h3>
+                <p class="text-sm text-slate-400 leading-relaxed">
+                    Browse the marketplace, find what you need, and send an exchange request. The item owner can accept or decline your offer.
+                </p>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="relative glass rounded-3xl p-8 card-hover group" data-animate>
+                <div class="absolute -top-4 -left-4 w-10 h-10 rounded-2xl bg-gradient-to-br from-pink-500 to-pink-600 flex items-center justify-center text-white font-display font-bold text-sm shadow-lg shadow-pink-500/30">
+                    03
+                </div>
+                <div class="w-16 h-16 rounded-2xl bg-pink-500/10 flex items-center justify-center mb-6 group-hover:bg-pink-500/20 transition-colors">
+                    <i data-lucide="gem" class="w-8 h-8 text-pink-400"></i>
+                </div>
+                <h3 class="font-display text-xl font-bold text-white mb-3">Earn & Spend Credits</h3>
+                <p class="text-sm text-slate-400 leading-relaxed">
+                    Givers earn credits, receivers spend them. The CreditLedger records every transaction with double-entry integrity.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══ CATEGORIES ═══ -->
+<section class="py-24 relative">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16" data-animate>
+            <span class="px-3 py-1 text-xs font-medium text-purple-400 glass rounded-full">Categories</span>
+            <h2 class="font-display text-4xl sm:text-5xl font-bold text-white mt-4 mb-4">
+                Browse by <span class="gradient-text">Category</span>
+            </h2>
+        </div>
+
+        <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+            {% for cat in categories %}
+            <a href="{{ url_for('marketplace', category=cat.CategoryID) }}" class="glass rounded-3xl p-6 text-center card-hover group" data-animate>
+                <div class="text-4xl mb-3 group-hover:scale-110 transition-transform">{{ cat.Icon }}</div>
+                <h3 class="font-semibold text-white text-sm">{{ cat.CategoryName }}</h3>
+                <p class="text-xs text-slate-500 mt-1">{{ cat.items.count() }} items</p>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- ═══ FEATURED ITEMS ═══ -->
+<section class="py-24 relative">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-end justify-between mb-12" data-animate>
+            <div>
+                <span class="px-3 py-1 text-xs font-medium text-emerald-400 glass rounded-full">Featured</span>
+                <h2 class="font-display text-4xl font-bold text-white mt-4">Recently Listed</h2>
+            </div>
+            <a href="{{ url_for('marketplace') }}" class="btn-secondary px-5 py-2.5 rounded-xl text-sm font-medium text-slate-300 flex items-center gap-2 group">
+                View All
+                <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+            </a>
+        </div>
+
+        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {% for item in items %}
+            <a href="{{ url_for('item_detail', item_id=item.ItemID) }}" class="glass rounded-3xl overflow-hidden card-hover group" data-animate>
+                <!-- Item Header -->
+                <div class="h-40 bg-gradient-to-br from-indigo-500/10 via-purple-500/10 to-pink-500/10 flex items-center justify-center relative overflow-hidden">
+                    <span class="text-6xl group-hover:scale-110 transition-transform duration-500">{{ item.category.Icon }}</span>
+                    <div class="absolute top-3 right-3">
+                        <span class="badge-available px-2 py-1 rounded-lg text-xs font-medium">{{ item.Status }}</span>
+                    </div>
+                </div>
+
+                <!-- Item Body -->
+                <div class="p-5">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="text-xs text-indigo-400 font-medium">{{ item.category.CategoryName }}</span>
+                        <span class="text-xs text-slate-600">•</span>
+                        <span class="text-xs text-slate-500">{{ item.Condition }}</span>
+                    </div>
+                    <h3 class="font-semibold text-white group-hover:text-indigo-300 transition-colors truncate">{{ item.Title }}</h3>
+                    <p class="text-xs text-slate-500 mt-1 line-clamp-2">{{ item.Description or 'No description provided.' }}</p>
+
+                    <div class="flex items-center justify-between mt-4 pt-4 border-t border-white/5">
+                        <div class="flex items-center gap-2">
+                            <span class="text-sm">{{ item.owner.Avatar }}</span>
+                            <span class="text-xs text-slate-400">{{ item.owner.Name.split(' ')[0] }}</span>
+                        </div>
+                        <span class="text-sm font-bold text-emerald-400">💎 {{ item.CreditValue }}</span>
+                    </div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- ═══ DBMS CONCEPTS SHOWCASE ═══ -->
+<section class="py-24 relative overflow-hidden">
+    <!-- Background -->
+    <div class="absolute inset-0 bg-gradient-to-b from-transparent via-indigo-950/20 to-transparent"></div>
+
+    <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16" data-animate>
+            <span class="px-3 py-1 text-xs font-medium text-pink-400 glass rounded-full">Under The Hood</span>
+            <h2 class="font-display text-4xl sm:text-5xl font-bold text-white mt-4 mb-4">
+                Powered by <span class="gradient-text">Advanced DBMS</span>
+            </h2>
+            <p class="text-slate-400 max-w-2xl mx-auto">
+                This platform demonstrates sophisticated database concepts including ER modeling,
+                normalization, ACID transactions, and multi-table referential integrity.
+            </p>
+        </div>
+
+        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="glass rounded-3xl p-6 card-hover" data-animate>
+                <div class="w-12 h-12 rounded-2xl bg-indigo-500/10 flex items-center justify-center mb-4">
+                    <i data-lucide="database" class="w-6 h-6 text-indigo-400"></i>
+                </div>
+                <h3 class="font-display font-bold text-white mb-2">5 Entities</h3>
+                <p class="text-xs text-slate-400">Student, Category, Item, ExchangeTransaction, CreditLedger — fully normalized to 3NF.</p>
+            </div>
+
+            <div class="glass rounded-3xl p-6 card-hover" data-animate>
+                <div class="w-12 h-12 rounded-2xl bg-purple-500/10 flex items-center justify-center mb-4">
+                    <i data-lucide="shield-check" class="w-6 h-6 text-purple-400"></i>
+                </div>
+                <h3 class="font-display font-bold text-white mb-2">ACID Transactions</h3>
+                <p class="text-xs text-slate-400">Atomic credit transfers with double-entry bookkeeping ensure financial data integrity.</p>
+            </div>
+
+            <div class="glass rounded-3xl p-6 card-hover" data-animate>
+                <div class="w-12 h-12 rounded-2xl bg-pink-500/10 flex items-center justify-center mb-4">
+                    <i data-lucide="git-branch" class="w-6 h-6 text-pink-400"></i>
+                </div>
+                <h3 class="font-display font-bold text-white mb-2">State Machine</h3>
+                <p class="text-xs text-slate-400">Items follow Available → Requested → Exchanged lifecycle with validation constraints.</p>
+            </div>
+
+            <div class="glass rounded-3xl p-6 card-hover" data-animate>
+                <div class="w-12 h-12 rounded-2xl bg-emerald-500/10 flex items-center justify-center mb-4">
+                    <i data-lucide="link-2" class="w-6 h-6 text-emerald-400"></i>
+                </div>
+                <h3 class="font-display font-bold text-white mb-2">Referential Integrity</h3>
+                <p class="text-xs text-slate-400">Foreign key constraints maintain relational consistency across all five entities.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══ CTA SECTION ═══ -->
+<section class="py-24 relative">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center" data-animate>
+        <div class="glass rounded-[2rem] p-12 sm:p-16 relative overflow-hidden">
+            <!-- Background Gradient -->
+            <div class="absolute inset-0 bg-gradient-to-br from-indigo-600/10 via-purple-600/10 to-pink-600/10"></div>
+
+            <div class="relative">
+                <h2 class="font-display text-4xl sm:text-5xl font-bold text-white mb-4">
+                    Ready to join the<br><span class="gradient-text">circular economy?</span>
+                </h2>
+                <p class="text-slate-400 max-w-lg mx-auto mb-8">
+                    Create your account and receive 100 starter credits to begin trading academic resources with fellow students.
+                </p>
+                <div class="flex flex-wrap justify-center gap-4">
+                    <a href="{{ url_for('register') }}" class="btn-primary px-10 py-4 rounded-2xl text-sm font-semibold text-white flex items-center gap-2 group">
+                        <span>Create Free Account</span>
+                        <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+                    </a>
+                    <a href="{{ url_for('marketplace') }}" class="btn-secondary px-10 py-4 rounded-2xl text-sm font-semibold text-slate-300">
+                        Explore Marketplace
+                    </a>
+                </div>
+
+                <!-- Demo credentials -->
+                <div class="mt-8 inline-flex items-center gap-2 px-4 py-2 glass-light rounded-xl">
+                    <i data-lucide="info" class="w-4 h-4 text-indigo-400"></i>
+                    <span class="text-xs text-slate-400">Demo login: <span class="text-indigo-300 font-mono">aarav@campus.edu</span> / <span class="text-indigo-300 font-mono">demo123</span></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

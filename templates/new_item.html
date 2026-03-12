@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+
+{% block title %}List New Item{% endblock %}
+
+{% block content %}
+<section class="py-12">
+    <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="mb-8" data-animate>
+            <a href="{{ url_for('dashboard') }}" class="text-sm text-slate-500 hover:text-indigo-400 transition-colors flex items-center gap-1 mb-4">
+                <i data-lucide="arrow-left" class="w-4 h-4"></i>
+                Back to Dashboard
+            </a>
+            <h1 class="font-display text-3xl font-bold text-white flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
+                    <i data-lucide="plus" class="w-5 h-5 text-white"></i>
+                </div>
+                List New Item
+            </h1>
+            <p class="text-slate-400 text-sm mt-2">Share an academic resource with the campus community</p>
+        </div>
+
+        <!-- Form -->
+        <div class="glass rounded-3xl p-8 animate-slide-up" data-animate>
+            <form method="POST" action="{{ url_for('new_item') }}" class="space-y-6" id="new-item-form">
+                <!-- Title -->
+                <div>
+                    <label class="block text-sm font-medium text-slate-300 mb-2">
+                        Item Title <span class="text-red-400">*</span>
+                    </label>
+                    <input type="text" name="title" required maxlength="100"
+                           class="input-field w-full px-4 py-3 rounded-xl text-sm text-white placeholder-slate-500"
+                           placeholder="e.g., Data Structures & Algorithms Textbook" id="item-title">
+                </div>
+
+                <!-- Category -->
+                <div>
+                    <label class="block text-sm font-medium text-slate-300 mb-2">
+                        Category <span class="text-red-400">*</span>
+                    </label>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-3" id="category-selector">
+                        {% for cat in categories %}
+                        <label class="cursor-pointer">
+                            <input type="radio" name="category_id" value="{{ cat.CategoryID }}" class="hidden peer" required>
+                            <div class="glass-light rounded-2xl p-4 text-center peer-checked:bg-indigo-500/20 peer-checked:border-indigo-500/40 peer-checked:ring-2 peer-checked:ring-indigo-500/30 border border-transparent hover:bg-white/5 transition-all">
+                                <span class="text-2xl block mb-1">{{ cat.Icon }}</span>
+                                <span class="text-xs font-medium text-slate-300">{{ cat.CategoryName }}</span>
+                            </div>
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Credit Value -->
+                <div>
+                    <label class="block text-sm font-medium text-slate-300 mb-2">
+                        Credit Value <span class="text-red-400">*</span>
+                    </label>
+                    <div class="relative">
+                        <span class="text-xl absolute left-4 top-1/2 -translate-y-1/2">💎</span>
+                        <input type="number" name="credit_value" required min="1" max="500"
+                               class="input-field w-full pl-12 pr-4 py-3 rounded-xl text-sm text-white placeholder-slate-500"
+                               placeholder="How many credits should this cost?" id="item-credit-value">
+                    </div>
+                    <p class="text-xs text-slate-500 mt-1">Suggested range: 5–100 credits for most academic items</p>
+                </div>
+
+                <!-- Condition -->
+                <div>
+                    <label class="block text-sm font-medium text-slate-300 mb-2">Condition</label>
+                    <div class="grid grid-cols-4 gap-3" id="condition-selector">
+                        {% for cond in ['New', 'Good', 'Fair', 'Poor'] %}
+                        <label class="cursor-pointer">
+                            <input type="radio" name="condition" value="{{ cond }}" class="hidden peer" {% if cond == 'Good' %}checked{% endif %}>
+                            <div class="glass-light rounded-xl p-3 text-center peer-checked:bg-indigo-500/20 peer-checked:border-indigo-500/40 peer-checked:ring-2 peer-checked:ring-indigo-500/30 border border-transparent hover:bg-white/5 transition-all">
+                                <span class="text-sm block">
+                                    {% if cond == 'New' %}✨{% elif cond == 'Good' %}👍{% elif cond == 'Fair' %}👌{% else %}🔧{% endif %}
+                                </span>
+                                <span class="text-xs font-medium text-slate-300 mt-1 block">{{ cond }}</span>
+                            </div>
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <!-- Description -->
+                <div>
+                    <label class="block text-sm font-medium text-slate-300 mb-2">Description</label>
+                    <textarea name="description" rows="4"
+                              class="input-field w-full px-4 py-3 rounded-xl text-sm text-white placeholder-slate-500 resize-none"
+                              placeholder="Describe the item's condition, any notes, edition number, etc." id="item-description"></textarea>
+                </div>
+
+                <!-- Submit -->
+                <div class="pt-2">
+                    <button type="submit" class="btn-primary w-full py-4 rounded-2xl text-sm font-semibold text-white flex items-center justify-center gap-2 group" id="submit-item-btn">
+                        <span>List Item on Marketplace</span>
+                        <i data-lucide="arrow-right" class="w-4 h-4 group-hover:translate-x-1 transition-transform"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Tips -->
+        <div class="mt-6 glass rounded-2xl p-5" data-animate>
+            <h3 class="text-sm font-semibold text-white mb-3 flex items-center gap-2">
+                <i data-lucide="lightbulb" class="w-4 h-4 text-amber-400"></i>
+                Tips for a Great Listing
+            </h3>
+            <ul class="space-y-2">
+                <li class="flex items-start gap-2 text-xs text-slate-400">
+                    <i data-lucide="check" class="w-3 h-3 text-emerald-400 mt-0.5 flex-shrink-0"></i>
+                    Use a clear, specific title (include edition, brand, etc.)
+                </li>
+                <li class="flex items-start gap-2 text-xs text-slate-400">
+                    <i data-lucide="check" class="w-3 h-3 text-emerald-400 mt-0.5 flex-shrink-0"></i>
+                    Describe the item's condition honestly — it builds trust
+                </li>
+                <li class="flex items-start gap-2 text-xs text-slate-400">
+                    <i data-lucide="check" class="w-3 h-3 text-emerald-400 mt-0.5 flex-shrink-0"></i>
+                    Set a fair credit value based on condition and demand
+                </li>
+            </ul>
+        </div>
+    </div>
+</section>
+{% endblock %}

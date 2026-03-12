@@ -2,7 +2,7 @@
 Campus Circular Economy & Barter Exchange - Database Models
 ============================================================
 Five primary entities: Student, Category, Item, ExchangeTransaction, CreditLedger
-Implements the ER model with proper relationships, constraints, and state-based logic.
+Uses MySQL via PyMySQL connector.
 """
 
 from datetime import datetime
@@ -25,9 +25,7 @@ class Student(UserMixin, db.Model):
     Name = db.Column(db.String(100), nullable=False)
     Email = db.Column(db.String(100), nullable=False, unique=True)
     PasswordHash = db.Column(db.String(255), nullable=False)
-    CreditBalance = db.Column(db.Integer, default=100)  # Start with 100 credits
-    JoinDate = db.Column(db.DateTime, default=datetime.utcnow)
-    Avatar = db.Column(db.String(10), default='🎓')
+    CreditBalance = db.Column(db.Integer, default=0)
 
     # Relationships
     items = db.relationship('Item', backref='owner', lazy='dynamic',
@@ -61,7 +59,6 @@ class Category(db.Model):
     CategoryID = db.Column(db.Integer, primary_key=True, autoincrement=True)
     CategoryName = db.Column(db.String(50), nullable=False, unique=True)
     Description = db.Column(db.String(255), nullable=True)
-    Icon = db.Column(db.String(10), default='📦')
 
     # Relationships
     items = db.relationship('Item', backref='category', lazy='dynamic')
@@ -82,14 +79,11 @@ class Item(db.Model):
     Title = db.Column(db.String(100), nullable=False)
     Description = db.Column(db.Text, nullable=True)
     CreditValue = db.Column(db.Integer, nullable=False)
-    Status = db.Column(db.String(20), default='Available')  # Available, Requested, Exchanged
-    Condition = db.Column(db.String(20), default='Good')  # New, Good, Fair, Poor
-    ImageURL = db.Column(db.String(255), nullable=True)
-    ListedDate = db.Column(db.DateTime, default=datetime.utcnow)
+    Status = db.Column(db.Enum('Available', 'Requested', 'Exchanged'), default='Available')
 
     # Foreign Keys
-    CategoryID = db.Column(db.Integer, db.ForeignKey('category.CategoryID'), nullable=False)
-    Owner_StudentID = db.Column(db.Integer, db.ForeignKey('student.StudentID'), nullable=False)
+    CategoryID = db.Column(db.Integer, db.ForeignKey('category.CategoryID'))
+    Owner_StudentID = db.Column(db.Integer, db.ForeignKey('student.StudentID'))
 
     # Relationships
     transactions = db.relationship('ExchangeTransaction', backref='item', lazy='dynamic')
@@ -101,20 +95,19 @@ class Item(db.Model):
 class ExchangeTransaction(db.Model):
     """
     Table 4: ExchangeTransaction
-    - Central hub managing many-to-many relationships between Givers and Receivers
+    - Central hub managing exchanges between Givers and Receivers
     - Status tracks transaction lifecycle: Pending -> Completed / Cancelled
     """
     __tablename__ = 'exchange_transaction'
 
     TransactionID = db.Column(db.Integer, primary_key=True, autoincrement=True)
     TransactionDate = db.Column(db.DateTime, default=datetime.utcnow)
-    Status = db.Column(db.String(20), default='Pending')  # Pending, Completed, Cancelled
-    CompletedDate = db.Column(db.DateTime, nullable=True)
+    Status = db.Column(db.Enum('Pending', 'Completed', 'Cancelled'), default='Pending')
 
     # Foreign Keys
-    ItemID = db.Column(db.Integer, db.ForeignKey('item.ItemID'), nullable=False)
-    Giver_StudentID = db.Column(db.Integer, db.ForeignKey('student.StudentID'), nullable=False)
-    Receiver_StudentID = db.Column(db.Integer, db.ForeignKey('student.StudentID'), nullable=False)
+    ItemID = db.Column(db.Integer, db.ForeignKey('item.ItemID'))
+    Giver_StudentID = db.Column(db.Integer, db.ForeignKey('student.StudentID'))
+    Receiver_StudentID = db.Column(db.Integer, db.ForeignKey('student.StudentID'))
 
     # Relationships
     ledger_entries = db.relationship('CreditLedger', backref='transaction', lazy='dynamic')
@@ -126,20 +119,19 @@ class ExchangeTransaction(db.Model):
 class CreditLedger(db.Model):
     """
     Table 5: CreditLedger
-    - Ensures balanced, non-redundant record of student credit points
+    - Records all credit movements for audit trail
     - Every transaction creates two entries: Credit (for giver) and Debit (for receiver)
     """
     __tablename__ = 'credit_ledger'
 
     LedgerID = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    TransactionType = db.Column(db.String(10), nullable=False)  # Credit, Debit
+    TransactionType = db.Column(db.Enum('Credit', 'Debit'), nullable=False)
     Amount = db.Column(db.Integer, nullable=False)
     EntryDate = db.Column(db.DateTime, default=datetime.utcnow)
-    BalanceAfter = db.Column(db.Integer, nullable=False)
 
     # Foreign Keys
-    StudentID = db.Column(db.Integer, db.ForeignKey('student.StudentID'), nullable=False)
-    TransactionID = db.Column(db.Integer, db.ForeignKey('exchange_transaction.TransactionID'), nullable=False)
+    StudentID = db.Column(db.Integer, db.ForeignKey('student.StudentID'))
+    TransactionID = db.Column(db.Integer, db.ForeignKey('exchange_transaction.TransactionID'))
 
     def __repr__(self):
         return f'<Ledger {self.LedgerID}: {self.TransactionType} {self.Amount}>'

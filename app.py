@@ -1,19 +1,19 @@
 """
 Campus Circular Economy & Barter Exchange
 ==========================================
-Main Flask Application
+Main Flask Application — MySQL Backend
 """
 
 from datetime import datetime
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from models import db, Student, Category, Item, ExchangeTransaction, CreditLedger
-from config import SQLiteConfig
+from config import Config
 from seed_data import seed_all
 
 # ── App Factory ──────────────────────────────────────────────
 app = Flask(__name__)
-app.config.from_object(SQLiteConfig)
+app.config.from_object(Config)
 
 db.init_app(app)
 
@@ -41,7 +41,7 @@ with app.app_context():
 # ── Landing Page ─────────────────────────────────────────────
 @app.route('/')
 def index():
-    items = Item.query.filter_by(Status='Available').order_by(Item.ListedDate.desc()).limit(8).all()
+    items = Item.query.filter_by(Status='Available').order_by(Item.ItemID.desc()).limit(8).all()
     categories = Category.query.all()
     stats = {
         'students': Student.query.count(),
@@ -164,9 +164,9 @@ def marketplace():
     elif sort == 'price_high':
         query = query.order_by(Item.CreditValue.desc())
     elif sort == 'oldest':
-        query = query.order_by(Item.ListedDate.asc())
+        query = query.order_by(Item.ItemID.asc())
     else:
-        query = query.order_by(Item.ListedDate.desc())
+        query = query.order_by(Item.ItemID.desc())
 
     items = query.all()
     categories = Category.query.all()
@@ -188,7 +188,6 @@ def new_item():
         description = request.form.get('description')
         credit_value = request.form.get('credit_value', type=int)
         category_id = request.form.get('category_id', type=int)
-        condition = request.form.get('condition', 'Good')
 
         if not all([title, credit_value, category_id]):
             flash('Title, credit value, and category are required.', 'error')
@@ -200,7 +199,6 @@ def new_item():
             CreditValue=credit_value,
             CategoryID=category_id,
             Owner_StudentID=current_user.StudentID,
-            Condition=condition,
             Status='Available'
         )
         db.session.add(item)
@@ -306,16 +304,14 @@ def accept_exchange(transaction_id):
 
     # 2. Update transaction status
     transaction.Status = 'Completed'
-    transaction.CompletedDate = datetime.utcnow()
 
-    # 3. Update item status & ownership
+    # 3. Update item status
     item.Status = 'Exchanged'
 
     # 4. Create ledger entries (double-entry bookkeeping)
     debit_entry = CreditLedger(
         TransactionType='Debit',
         Amount=item.CreditValue,
-        BalanceAfter=receiver.CreditBalance,
         StudentID=receiver.StudentID,
         TransactionID=transaction.TransactionID
     )
@@ -323,7 +319,6 @@ def accept_exchange(transaction_id):
     credit_entry = CreditLedger(
         TransactionType='Credit',
         Amount=item.CreditValue,
-        BalanceAfter=giver.CreditBalance,
         StudentID=giver.StudentID,
         TransactionID=transaction.TransactionID
     )

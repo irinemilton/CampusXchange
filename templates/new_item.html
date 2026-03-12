@@ -43,7 +43,7 @@
                         <label class="cursor-pointer">
                             <input type="radio" name="category_id" value="{{ cat.CategoryID }}" class="hidden peer" required>
                             <div class="glass-light rounded-2xl p-4 text-center peer-checked:bg-indigo-500/20 peer-checked:border-indigo-500/40 peer-checked:ring-2 peer-checked:ring-indigo-500/30 border border-transparent hover:bg-white/5 transition-all">
-                                <span class="text-2xl block mb-1">{{ cat.Icon }}</span>
+                                <span class="text-2xl block mb-1">📦</span>
                                 <span class="text-xs font-medium text-slate-300">{{ cat.CategoryName }}</span>
                             </div>
                         </label>
@@ -65,23 +65,7 @@
                     <p class="text-xs text-slate-500 mt-1">Suggested range: 5–100 credits for most academic items</p>
                 </div>
 
-                <!-- Condition -->
-                <div>
-                    <label class="block text-sm font-medium text-slate-300 mb-2">Condition</label>
-                    <div class="grid grid-cols-4 gap-3" id="condition-selector">
-                        {% for cond in ['New', 'Good', 'Fair', 'Poor'] %}
-                        <label class="cursor-pointer">
-                            <input type="radio" name="condition" value="{{ cond }}" class="hidden peer" {% if cond == 'Good' %}checked{% endif %}>
-                            <div class="glass-light rounded-xl p-3 text-center peer-checked:bg-indigo-500/20 peer-checked:border-indigo-500/40 peer-checked:ring-2 peer-checked:ring-indigo-500/30 border border-transparent hover:bg-white/5 transition-all">
-                                <span class="text-sm block">
-                                    {% if cond == 'New' %}✨{% elif cond == 'Good' %}👍{% elif cond == 'Fair' %}👌{% else %}🔧{% endif %}
-                                </span>
-                                <span class="text-xs font-medium text-slate-300 mt-1 block">{{ cond }}</span>
-                            </div>
-                        </label>
-                        {% endfor %}
-                    </div>
-                </div>
+
 
                 <!-- Description -->
                 <div>

@@ -9,12 +9,12 @@ from werkzeug.security import generate_password_hash
 def seed_categories():
     """Insert default academic resource categories"""
     categories = [
-        Category(CategoryName='Textbooks', Description='Academic textbooks and reference materials', Icon='📚'),
-        Category(CategoryName='Electronics', Description='Calculators, tablets, and gadgets', Icon='💻'),
-        Category(CategoryName='Lab Equipment', Description='Lab coats, goggles, and instruments', Icon='🔬'),
-        Category(CategoryName='Stationery', Description='Notebooks, pens, and art supplies', Icon='✏️'),
-        Category(CategoryName='Study Materials', Description='Notes, flashcards, and study guides', Icon='📝'),
-        Category(CategoryName='Sports Equipment', Description='Sports gear and fitness equipment', Icon='⚽'),
+        Category(CategoryName='Textbooks', Description='Academic textbooks and reference materials'),
+        Category(CategoryName='Electronics', Description='Calculators, tablets, and gadgets'),
+        Category(CategoryName='Lab Equipment', Description='Lab coats, goggles, and instruments'),
+        Category(CategoryName='Stationery', Description='Notebooks, pens, and art supplies'),
+        Category(CategoryName='Study Materials', Description='Notes, flashcards, and study guides'),
+        Category(CategoryName='Sports Equipment', Description='Sports gear and fitness equipment'),
     ]
 
     for cat in categories:
@@ -29,11 +29,11 @@ def seed_demo_data():
     """Insert demo students and items for showcase"""
     # Demo students
     demo_students = [
-        {'Name': 'Aarav Sharma', 'Email': 'aarav@campus.edu', 'Password': 'demo123', 'Avatar': '🧑‍💻'},
-        {'Name': 'Priya Patel', 'Email': 'priya@campus.edu', 'Password': 'demo123', 'Avatar': '👩‍🔬'},
-        {'Name': 'Rohit Kumar', 'Email': 'rohit@campus.edu', 'Password': 'demo123', 'Avatar': '👨‍🎓'},
-        {'Name': 'Sneha Gupta', 'Email': 'sneha@campus.edu', 'Password': 'demo123', 'Avatar': '👩‍💻'},
-        {'Name': 'Arjun Mehta', 'Email': 'arjun@campus.edu', 'Password': 'demo123', 'Avatar': '🧑‍🎓'},
+        {'Name': 'Aarav Sharma', 'Email': 'aarav@campus.edu', 'Password': 'demo123'},
+        {'Name': 'Priya Patel', 'Email': 'priya@campus.edu', 'Password': 'demo123'},
+        {'Name': 'Rohit Kumar', 'Email': 'rohit@campus.edu', 'Password': 'demo123'},
+        {'Name': 'Sneha Gupta', 'Email': 'sneha@campus.edu', 'Password': 'demo123'},
+        {'Name': 'Arjun Mehta', 'Email': 'arjun@campus.edu', 'Password': 'demo123'},
     ]
 
     for s in demo_students:
@@ -44,7 +44,6 @@ def seed_demo_data():
                 Email=s['Email'],
                 PasswordHash=generate_password_hash(s['Password']),
                 CreditBalance=100,
-                Avatar=s['Avatar']
             )
             db.session.add(student)
 
@@ -66,18 +65,18 @@ def seed_demo_data():
 
     if Item.query.count() == 0:
         items = [
-            Item(Title='Data Structures & Algorithms', Description='Cormen CLRS 3rd Edition. Excellent condition, no highlights.', CreditValue=25, Status='Available', Condition='Good', CategoryID=textbooks.CategoryID, Owner_StudentID=aarav.StudentID),
-            Item(Title='Engineering Mathematics', Description='Kreyszig Advanced Engineering Mathematics 10th Ed. Some notes in margins.', CreditValue=20, Status='Available', Condition='Fair', CategoryID=textbooks.CategoryID, Owner_StudentID=priya.StudentID),
-            Item(Title='Scientific Calculator', Description='Casio FX-991EX ClassWiz. Perfect working condition with cover.', CreditValue=30, Status='Available', Condition='Good', CategoryID=electronics.CategoryID, Owner_StudentID=rohit.StudentID),
-            Item(Title='Arduino Starter Kit', Description='Complete Arduino UNO R3 kit with breadboard, LEDs, sensors and wires.', CreditValue=40, Status='Available', Condition='Good', CategoryID=electronics.CategoryID, Owner_StudentID=sneha.StudentID),
-            Item(Title='Chemistry Lab Coat', Description='White lab coat, size M. Used for one semester, freshly laundered.', CreditValue=10, Status='Available', Condition='Good', CategoryID=lab.CategoryID, Owner_StudentID=arjun.StudentID),
-            Item(Title='Physics Lab Manual', Description='University prescribed physics lab manual with completed experiments.', CreditValue=8, Status='Available', Condition='Fair', CategoryID=study.CategoryID, Owner_StudentID=aarav.StudentID),
-            Item(Title='Drawing Instruments Set', Description='Professional drafting set with compass, divider, and protractor.', CreditValue=15, Status='Available', Condition='Good', CategoryID=stationery.CategoryID, Owner_StudentID=priya.StudentID),
-            Item(Title='Badminton Racket', Description='Yonex Nanoray series. Used for one season, strings in great shape.', CreditValue=20, Status='Available', Condition='Good', CategoryID=sports.CategoryID, Owner_StudentID=rohit.StudentID),
-            Item(Title='Operating Systems Textbook', Description='Silberschatz, Galvin – 10th Edition. Clean, no markings.', CreditValue=22, Status='Available', Condition='New', CategoryID=textbooks.CategoryID, Owner_StudentID=sneha.StudentID),
-            Item(Title='Raspberry Pi 4 Model B', Description='4GB RAM variant with case and power supply. Used for IoT project.', CreditValue=45, Status='Available', Condition='Good', CategoryID=electronics.CategoryID, Owner_StudentID=arjun.StudentID),
-            Item(Title='Organic Chemistry Notes', Description='Handwritten notes covering full semester. Very detailed diagrams.', CreditValue=12, Status='Available', Condition='Good', CategoryID=study.CategoryID, Owner_StudentID=priya.StudentID),
-            Item(Title='Safety Goggles', Description='Chemical-resistant lab safety goggles. Anti-fog coated.', CreditValue=8, Status='Available', Condition='Good', CategoryID=lab.CategoryID, Owner_StudentID=aarav.StudentID),
+            Item(Title='Data Structures & Algorithms', Description='Cormen CLRS 3rd Edition. Excellent condition, no highlights.', CreditValue=25, Status='Available', CategoryID=textbooks.CategoryID, Owner_StudentID=aarav.StudentID),
+            Item(Title='Engineering Mathematics', Description='Kreyszig Advanced Engineering Mathematics 10th Ed. Some notes in margins.', CreditValue=20, Status='Available', CategoryID=textbooks.CategoryID, Owner_StudentID=priya.StudentID),
+            Item(Title='Scientific Calculator', Description='Casio FX-991EX ClassWiz. Perfect working condition with cover.', CreditValue=30, Status='Available', CategoryID=electronics.CategoryID, Owner_StudentID=rohit.StudentID),
+            Item(Title='Arduino Starter Kit', Description='Complete Arduino UNO R3 kit with breadboard, LEDs, sensors and wires.', CreditValue=40, Status='Available', CategoryID=electronics.CategoryID, Owner_StudentID=sneha.StudentID),
+            Item(Title='Chemistry Lab Coat', Description='White lab coat, size M. Used for one semester, freshly laundered.', CreditValue=10, Status='Available', CategoryID=lab.CategoryID, Owner_StudentID=arjun.StudentID),
+            Item(Title='Physics Lab Manual', Description='University prescribed physics lab manual with completed experiments.', CreditValue=8, Status='Available', CategoryID=study.CategoryID, Owner_StudentID=aarav.StudentID),
+            Item(Title='Drawing Instruments Set', Description='Professional drafting set with compass, divider, and protractor.', CreditValue=15, Status='Available', CategoryID=stationery.CategoryID, Owner_StudentID=priya.StudentID),
+            Item(Title='Badminton Racket', Description='Yonex Nanoray series. Used for one season, strings in great shape.', CreditValue=20, Status='Available', CategoryID=sports.CategoryID, Owner_StudentID=rohit.StudentID),
+            Item(Title='Operating Systems Textbook', Description='Silberschatz, Galvin – 10th Edition. Clean, no markings.', CreditValue=22, Status='Available', CategoryID=textbooks.CategoryID, Owner_StudentID=sneha.StudentID),
+            Item(Title='Raspberry Pi 4 Model B', Description='4GB RAM variant with case and power supply. Used for IoT project.', CreditValue=45, Status='Available', CategoryID=electronics.CategoryID, Owner_StudentID=arjun.StudentID),
+            Item(Title='Organic Chemistry Notes', Description='Handwritten notes covering full semester. Very detailed diagrams.', CreditValue=12, Status='Available', CategoryID=study.CategoryID, Owner_StudentID=priya.StudentID),
+            Item(Title='Safety Goggles', Description='Chemical-resistant lab safety goggles. Anti-fog coated.', CreditValue=8, Status='Available', CategoryID=lab.CategoryID, Owner_StudentID=aarav.StudentID),
         ]
 
         for item in items:

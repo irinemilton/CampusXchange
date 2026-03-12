@@ -84,7 +84,7 @@
                     ">
                         <div class="flex items-start gap-3 mb-3">
                             <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-500/20 to-purple-500/20 flex items-center justify-center text-2xl">
-                                {{ item.category.Icon }}
+                                📦
                             </div>
                             <div class="flex-1 min-w-0">
                                 <h3 class="font-semibold text-white text-sm truncate">{{ item.Title }}</h3>
@@ -186,7 +186,7 @@
         <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
             {% for cat in categories %}
             <a href="{{ url_for('marketplace', category=cat.CategoryID) }}" class="glass rounded-3xl p-6 text-center card-hover group" data-animate>
-                <div class="text-4xl mb-3 group-hover:scale-110 transition-transform">{{ cat.Icon }}</div>
+                <div class="text-4xl mb-3 group-hover:scale-110 transition-transform">📦</div>
                 <h3 class="font-semibold text-white text-sm">{{ cat.CategoryName }}</h3>
                 <p class="text-xs text-slate-500 mt-1">{{ cat.items.count() }} items</p>
             </a>
@@ -214,7 +214,7 @@
             <a href="{{ url_for('item_detail', item_id=item.ItemID) }}" class="glass rounded-3xl overflow-hidden card-hover group" data-animate>
                 <!-- Item Header -->
                 <div class="h-40 bg-gradient-to-br from-indigo-500/10 via-purple-500/10 to-pink-500/10 flex items-center justify-center relative overflow-hidden">
-                    <span class="text-6xl group-hover:scale-110 transition-transform duration-500">{{ item.category.Icon }}</span>
+                    <span class="text-6xl group-hover:scale-110 transition-transform duration-500">📦</span>
                     <div class="absolute top-3 right-3">
                         <span class="badge-available px-2 py-1 rounded-lg text-xs font-medium">{{ item.Status }}</span>
                     </div>
@@ -225,14 +225,14 @@
                     <div class="flex items-center gap-2 mb-2">
                         <span class="text-xs text-indigo-400 font-medium">{{ item.category.CategoryName }}</span>
                         <span class="text-xs text-slate-600">•</span>
-                        <span class="text-xs text-slate-500">{{ item.Condition }}</span>
+                        <span class="text-xs text-slate-500">{{ item.category.CategoryName }}</span>
                     </div>
                     <h3 class="font-semibold text-white group-hover:text-indigo-300 transition-colors truncate">{{ item.Title }}</h3>
                     <p class="text-xs text-slate-500 mt-1 line-clamp-2">{{ item.Description or 'No description provided.' }}</p>
 
                     <div class="flex items-center justify-between mt-4 pt-4 border-t border-white/5">
                         <div class="flex items-center gap-2">
-                            <span class="text-sm">{{ item.owner.Avatar }}</span>
+                            <span class="text-sm">🎓</span>
                             <span class="text-xs text-slate-400">{{ item.owner.Name.split(' ')[0] }}</span>
                         </div>
                         <span class="text-sm font-bold text-emerald-400">💎 {{ item.CreditValue }}</span>

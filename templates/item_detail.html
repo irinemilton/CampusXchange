@@ -19,7 +19,7 @@
             <div class="lg:col-span-2" data-animate>
                 <div class="glass rounded-3xl overflow-hidden aspect-square flex items-center justify-center relative">
                     <div class="absolute inset-0 bg-gradient-to-br from-indigo-500/10 via-purple-500/10 to-pink-500/10"></div>
-                    <span class="text-8xl relative z-10">{{ item.category.Icon }}</span>
+                    <span class="text-8xl relative z-10">📦</span>
 
                     <!-- Status Overlay -->
                     {% if item.Status != 'Available' %}
@@ -43,7 +43,7 @@
                         {{ item.category.CategoryName }}
                     </span>
                     <span class="px-3 py-1 rounded-lg glass-light text-slate-300 text-xs font-medium">
-                        {{ item.Condition }}
+                        {{ item.category.CategoryName }}
                     </span>
                     <span class="px-3 py-1 rounded-lg
                         {% if item.Status == 'Available' %}badge-available
@@ -96,12 +96,11 @@
                     </h3>
                     <div class="flex items-center gap-4">
                         <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-500/20 to-purple-500/20 flex items-center justify-center text-3xl">
-                            {{ item.owner.Avatar }}
+                            🎓
                         </div>
                         <div>
                             <p class="font-semibold text-white">{{ item.owner.Name }}</p>
                             <p class="text-xs text-slate-400">{{ item.owner.Email }}</p>
-                            <p class="text-xs text-slate-500 mt-1">Member since {{ item.owner.JoinDate.strftime('%b %Y') if item.owner.JoinDate else 'Recently' }}</p>
                         </div>
                     </div>
                 </div>
@@ -110,8 +109,8 @@
                 <div class="grid grid-cols-3 gap-4">
                     <div class="glass rounded-2xl p-4 text-center">
                         <i data-lucide="calendar" class="w-5 h-5 text-indigo-400 mx-auto mb-2"></i>
-                        <p class="text-xs text-slate-400">Listed</p>
-                        <p class="text-sm font-medium text-white">{{ item.ListedDate.strftime('%b %d, %Y') if item.ListedDate else 'Today' }}</p>
+                        <p class="text-xs text-slate-400">Status</p>
+                        <p class="text-sm font-medium text-white">{{ item.Status }}</p>
                     </div>
                     <div class="glass rounded-2xl p-4 text-center">
                         <i data-lucide="tag" class="w-5 h-5 text-purple-400 mx-auto mb-2"></i>
@@ -119,9 +118,9 @@
                         <p class="text-sm font-medium text-white">{{ item.category.CategoryName }}</p>
                     </div>
                     <div class="glass rounded-2xl p-4 text-center">
-                        <i data-lucide="star" class="w-5 h-5 text-amber-400 mx-auto mb-2"></i>
-                        <p class="text-xs text-slate-400">Condition</p>
-                        <p class="text-sm font-medium text-white">{{ item.Condition }}</p>
+                        <i data-lucide="gem" class="w-5 h-5 text-emerald-400 mx-auto mb-2"></i>
+                        <p class="text-xs text-slate-400">Credit Value</p>
+                        <p class="text-sm font-medium text-white">{{ item.CreditValue }}</p>
                     </div>
                 </div>
 
@@ -166,12 +165,12 @@
                 {% for ritem in related_items %}
                 <a href="{{ url_for('item_detail', item_id=ritem.ItemID) }}" class="glass rounded-3xl overflow-hidden card-hover group">
                     <div class="h-28 bg-gradient-to-br from-indigo-500/10 via-purple-500/10 to-pink-500/10 flex items-center justify-center">
-                        <span class="text-4xl group-hover:scale-110 transition-transform">{{ ritem.category.Icon }}</span>
+                        <span class="text-4xl group-hover:scale-110 transition-transform">📦</span>
                     </div>
                     <div class="p-4">
                         <h3 class="font-semibold text-white text-sm truncate group-hover:text-indigo-300 transition-colors">{{ ritem.Title }}</h3>
                         <div class="flex items-center justify-between mt-2">
-                            <span class="text-xs text-slate-400">{{ ritem.Condition }}</span>
+                            <span class="text-xs text-slate-400">{{ ritem.category.CategoryName }}</span>
                             <span class="text-sm font-bold text-emerald-400">💎 {{ ritem.CreditValue }}</span>
                         </div>
                     </div>

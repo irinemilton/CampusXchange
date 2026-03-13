@@ -45,7 +45,7 @@ def index():
     categories = Category.query.all()
     stats = {
         'students': Student.query.count(),
-        'items': Item.query.count(),
+        'items_count': Item.query.count(),
         'exchanges': ExchangeTransaction.query.filter_by(Status='Completed').count(),
         'categories': Category.query.count(),
     }

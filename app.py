@@ -11,6 +11,8 @@ from models import db, Student, Category, Item, ExchangeTransaction, CreditLedge
 from config import Config
 from seed_data import seed_all
 
+ITEMS_PER_PAGE = 12
+
 # ── App Factory ──────────────────────────────────────────────
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -25,7 +27,7 @@ login_manager.login_message_category = 'info'
 
 @login_manager.user_loader
 def load_user(user_id):
-    return Student.query.get(int(user_id))
+    return db.session.get(Student, int(user_id))
 
 
 # ── Initialize DB ───────────────────────────────────────────
@@ -147,6 +149,7 @@ def marketplace():
     category_id = request.args.get('category', type=int)
     search = request.args.get('search', '')
     sort = request.args.get('sort', 'newest')
+    page = request.args.get('page', 1, type=int)
 
     query = Item.query.filter_by(Status='Available')
 
@@ -168,11 +171,13 @@ def marketplace():
     else:
         query = query.order_by(Item.ItemID.desc())
 
-    items = query.all()
+    pagination = query.paginate(page=page, per_page=ITEMS_PER_PAGE, error_out=False)
+    items = pagination.items
     categories = Category.query.all()
 
     return render_template('marketplace.html',
                            items=items,
+                           pagination=pagination,
                            categories=categories,
                            selected_category=category_id,
                            search=search,
@@ -298,34 +303,39 @@ def accept_exchange(transaction_id):
         return redirect(url_for('dashboard'))
 
     # ── Atomic Transaction ──
-    # 1. Transfer credits
-    receiver.CreditBalance -= item.CreditValue
-    giver.CreditBalance += item.CreditValue
+    try:
+        # 1. Transfer credits
+        receiver.CreditBalance -= item.CreditValue
+        giver.CreditBalance += item.CreditValue
 
-    # 2. Update transaction status
-    transaction.Status = 'Completed'
+        # 2. Update transaction status
+        transaction.Status = 'Completed'
 
-    # 3. Update item status
-    item.Status = 'Exchanged'
+        # 3. Update item status
+        item.Status = 'Exchanged'
 
-    # 4. Create ledger entries (double-entry bookkeeping)
-    debit_entry = CreditLedger(
-        TransactionType='Debit',
-        Amount=item.CreditValue,
-        StudentID=receiver.StudentID,
-        TransactionID=transaction.TransactionID
-    )
+        # 4. Create ledger entries (double-entry bookkeeping)
+        debit_entry = CreditLedger(
+            TransactionType='Debit',
+            Amount=item.CreditValue,
+            StudentID=receiver.StudentID,
+            TransactionID=transaction.TransactionID
+        )
 
-    credit_entry = CreditLedger(
-        TransactionType='Credit',
-        Amount=item.CreditValue,
-        StudentID=giver.StudentID,
-        TransactionID=transaction.TransactionID
-    )
+        credit_entry = CreditLedger(
+            TransactionType='Credit',
+            Amount=item.CreditValue,
+            StudentID=giver.StudentID,
+            TransactionID=transaction.TransactionID
+        )
 
-    db.session.add(debit_entry)
-    db.session.add(credit_entry)
-    db.session.commit()
+        db.session.add(debit_entry)
+        db.session.add(credit_entry)
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        flash('An error occurred while processing the exchange. Please try again.', 'error')
+        return redirect(url_for('dashboard'))
 
     flash(f'Exchange completed! You received {item.CreditValue} credits for "{item.Title}".', 'success')
     return redirect(url_for('dashboard'))
@@ -417,10 +427,82 @@ def delete_item(item_id):
         flash('Cannot delete an item with a pending request.', 'error')
         return redirect(url_for('dashboard'))
 
+    title = item.Title
     db.session.delete(item)
     db.session.commit()
-    flash(f'"{item.Title}" has been removed.', 'info')
+    flash(f'"{title}" has been removed.', 'info')
     return redirect(url_for('dashboard'))
+
+
+# ── Edit Item ────────────────────────────────────────────────
+@app.route('/items/<int:item_id>/edit', methods=['GET', 'POST'])
+@login_required
+def edit_item(item_id):
+    item = Item.query.get_or_404(item_id)
+
+    if item.Owner_StudentID != current_user.StudentID:
+        flash('Unauthorized action.', 'error')
+        return redirect(url_for('dashboard'))
+
+    if item.Status != 'Available':
+        flash('Only Available items can be edited.', 'error')
+        return redirect(url_for('dashboard'))
+
+    if request.method == 'POST':
+        title = request.form.get('title', '').strip()
+        description = request.form.get('description', '').strip()
+        credit_value = request.form.get('credit_value', type=int)
+        category_id = request.form.get('category_id', type=int)
+
+        if not all([title, credit_value, category_id]):
+            flash('Title, credit value, and category are required.', 'error')
+            return redirect(url_for('edit_item', item_id=item_id))
+
+        item.Title = title
+        item.Description = description
+        item.CreditValue = credit_value
+        item.CategoryID = category_id
+        db.session.commit()
+
+        flash(f'"{title}" updated successfully!', 'success')
+        return redirect(url_for('item_detail', item_id=item_id))
+
+    categories = Category.query.all()
+    return render_template('edit_item.html', item=item, categories=categories)
+
+
+# ── Profile Page ─────────────────────────────────────────────
+@app.route('/profile')
+@login_required
+def profile():
+    my_items = Item.query.filter_by(Owner_StudentID=current_user.StudentID).all()
+
+    completed_given = ExchangeTransaction.query.filter_by(
+        Giver_StudentID=current_user.StudentID,
+        Status='Completed'
+    ).count()
+
+    completed_received = ExchangeTransaction.query.filter_by(
+        Receiver_StudentID=current_user.StudentID,
+        Status='Completed'
+    ).count()
+
+    credits_earned = db.session.query(db.func.sum(CreditLedger.Amount)).filter_by(
+        StudentID=current_user.StudentID,
+        TransactionType='Credit'
+    ).scalar() or 0
+
+    credits_spent = db.session.query(db.func.sum(CreditLedger.Amount)).filter_by(
+        StudentID=current_user.StudentID,
+        TransactionType='Debit'
+    ).scalar() or 0
+
+    return render_template('profile.html',
+                           my_items=my_items,
+                           completed_given=completed_given,
+                           completed_received=completed_received,
+                           credits_earned=credits_earned,
+                           credits_spent=credits_spent)
 
 
 # ══════════════════════════════════════════════════════════════

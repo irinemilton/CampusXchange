@@ -358,11 +358,11 @@
 
                 <!-- Desktop Nav Links -->
                 <div class="hidden md:flex items-center gap-1">
-                    <a href="{{ url_for('index') }}" class="nav-link px-4 py-2 text-sm font-medium text-slate-300 hover:text-white rounded-lg hover:bg-white/5">Home</a>
-                    <a href="{{ url_for('marketplace') }}" class="nav-link px-4 py-2 text-sm font-medium text-slate-300 hover:text-white rounded-lg hover:bg-white/5">Marketplace</a>
+                    <a href="{{ url_for('index') }}" class="nav-link px-4 py-2 text-sm font-medium rounded-lg hover:bg-white/5 {% if request.endpoint == 'index' %}text-white active{% else %}text-slate-300 hover:text-white{% endif %}">Home</a>
+                    <a href="{{ url_for('marketplace') }}" class="nav-link px-4 py-2 text-sm font-medium rounded-lg hover:bg-white/5 {% if request.endpoint == 'marketplace' %}text-white active{% else %}text-slate-300 hover:text-white{% endif %}">Marketplace</a>
                     {% if current_user.is_authenticated %}
-                    <a href="{{ url_for('dashboard') }}" class="nav-link px-4 py-2 text-sm font-medium text-slate-300 hover:text-white rounded-lg hover:bg-white/5">Dashboard</a>
-                    <a href="{{ url_for('transactions') }}" class="nav-link px-4 py-2 text-sm font-medium text-slate-300 hover:text-white rounded-lg hover:bg-white/5">History</a>
+                    <a href="{{ url_for('dashboard') }}" class="nav-link px-4 py-2 text-sm font-medium rounded-lg hover:bg-white/5 {% if request.endpoint == 'dashboard' %}text-white active{% else %}text-slate-300 hover:text-white{% endif %}">Dashboard</a>
+                    <a href="{{ url_for('transactions') }}" class="nav-link px-4 py-2 text-sm font-medium rounded-lg hover:bg-white/5 {% if request.endpoint == 'transactions' %}text-white active{% else %}text-slate-300 hover:text-white{% endif %}">History</a>
                     {% endif %}
                 </div>
 
@@ -389,6 +389,9 @@
                             </div>
                             <a href="{{ url_for('dashboard') }}" class="flex items-center gap-3 px-3 py-2 text-sm text-slate-300 hover:text-white hover:bg-white/5 rounded-xl transition-all">
                                 <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Dashboard
+                            </a>
+                            <a href="{{ url_for('profile') }}" class="flex items-center gap-3 px-3 py-2 text-sm text-slate-300 hover:text-white hover:bg-white/5 rounded-xl transition-all">
+                                <i data-lucide="user-circle" class="w-4 h-4"></i> My Profile
                             </a>
                             <a href="{{ url_for('new_item') }}" class="flex items-center gap-3 px-3 py-2 text-sm text-slate-300 hover:text-white hover:bg-white/5 rounded-xl transition-all">
                                 <i data-lucide="plus-circle" class="w-4 h-4"></i> List Item
@@ -426,6 +429,7 @@
                 <a href="{{ url_for('marketplace') }}" class="block px-3 py-2 text-sm text-slate-300 hover:text-white hover:bg-white/5 rounded-lg">Marketplace</a>
                 {% if current_user.is_authenticated %}
                 <a href="{{ url_for('dashboard') }}" class="block px-3 py-2 text-sm text-slate-300 hover:text-white hover:bg-white/5 rounded-lg">Dashboard</a>
+                <a href="{{ url_for('profile') }}" class="block px-3 py-2 text-sm text-slate-300 hover:text-white hover:bg-white/5 rounded-lg">My Profile</a>
                 <a href="{{ url_for('transactions') }}" class="block px-3 py-2 text-sm text-slate-300 hover:text-white hover:bg-white/5 rounded-lg">History</a>
                 <a href="{{ url_for('new_item') }}" class="block px-3 py-2 text-sm text-slate-300 hover:text-white hover:bg-white/5 rounded-lg">List Item</a>
                 <a href="{{ url_for('logout') }}" class="block px-3 py-2 text-sm text-red-400 hover:bg-red-500/10 rounded-lg">Sign Out</a>

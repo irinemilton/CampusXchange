@@ -2,6 +2,15 @@
 
 {% block title %}Marketplace{% endblock %}
 
+{% set cat_icons = {
+    'Textbooks': '📚',
+    'Electronics': '⚡',
+    'Lab Equipment': '🧪',
+    'Stationery': '✏️',
+    'Study Materials': '📝',
+    'Sports Equipment': '🏸'
+} %}
+
 {% block content %}
 <section class="py-12">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -41,11 +50,11 @@
                                     <span class="text-sm">📋</span>
                                     <span>All Categories</span>
                                 </a>
-                                {% for cat in categories %}
+                            {% for cat in categories %}
                                 <a href="{{ url_for('marketplace', category=cat.CategoryID, search=search, sort=sort) }}"
                                    class="flex items-center justify-between px-3 py-2 rounded-xl text-sm transition-all {% if selected_category == cat.CategoryID %}bg-indigo-500/10 text-indigo-300 border border-indigo-500/20{% else %}text-slate-400 hover:bg-white/5 hover:text-slate-200{% endif %}">
                                     <span class="flex items-center gap-2">
-                                        <span class="text-sm">📦</span>
+                                        <span class="text-sm">{{ cat_icons.get(cat.CategoryName, '📦') }}</span>
                                         <span>{{ cat.CategoryName }}</span>
                                     </span>
                                     <span class="text-xs text-slate-600">{{ cat.items.filter_by(Status='Available').count() }}</span>
@@ -95,7 +104,7 @@
                     <a href="{{ url_for('item_detail', item_id=item.ItemID) }}" class="glass rounded-3xl overflow-hidden card-hover group" data-animate>
                         <!-- Item Header -->
                         <div class="h-36 bg-gradient-to-br from-indigo-500/10 via-purple-500/10 to-pink-500/10 flex items-center justify-center relative overflow-hidden">
-                            <span class="text-5xl group-hover:scale-110 transition-transform duration-500">📦</span>
+                            <span class="text-5xl group-hover:scale-110 transition-transform duration-500">{{ cat_icons.get(item.category.CategoryName, '📦') }}</span>
                             <div class="absolute top-3 right-3">
                                 <span class="badge-available px-2 py-1 rounded-lg text-xs font-medium">{{ item.Status }}</span>
                             </div>
@@ -115,6 +124,9 @@
                                 <div class="flex items-center gap-2">
                                     <span class="text-sm">🎓</span>
                                     <span class="text-xs text-slate-400">{{ item.owner.Name.split(' ')[0] }}</span>
+                                    {% if item.DateListed %}
+                                    <span class="text-xs text-slate-600">• {{ item.DateListed.strftime('%b %d') }}</span>
+                                    {% endif %}
                                 </div>
                                 <span class="text-sm font-bold text-emerald-400">💎 {{ item.CreditValue }}</span>
                             </div>
@@ -132,6 +144,27 @@
                         <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
                         Clear Filters
                     </a>
+                </div>
+                {% endif %}
+
+                <!-- Pagination -->
+                {% if pagination and pagination.pages > 1 %}
+                <div class="flex items-center justify-center gap-2 mt-10">
+                    {% if pagination.has_prev %}
+                    <a href="{{ url_for('marketplace', page=pagination.prev_num, category=selected_category or '', search=search, sort=sort) }}"
+                       class="px-4 py-2 rounded-xl glass text-sm text-slate-300 hover:text-white hover:bg-white/5 flex items-center gap-2 transition-all">
+                        <i data-lucide="chevron-left" class="w-4 h-4"></i> Prev
+                    </a>
+                    {% endif %}
+                    <span class="px-4 py-2 text-sm text-slate-400">
+                        Page {{ pagination.page }} of {{ pagination.pages }}
+                    </span>
+                    {% if pagination.has_next %}
+                    <a href="{{ url_for('marketplace', page=pagination.next_num, category=selected_category or '', search=search, sort=sort) }}"
+                       class="px-4 py-2 rounded-xl glass text-sm text-slate-300 hover:text-white hover:bg-white/5 flex items-center gap-2 transition-all">
+                        Next <i data-lucide="chevron-right" class="w-4 h-4"></i>
+                    </a>
+                    {% endif %}
                 </div>
                 {% endif %}
             </div>

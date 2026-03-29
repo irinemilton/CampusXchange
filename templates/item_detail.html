@@ -2,6 +2,15 @@
 
 {% block title %}{{ item.Title }}{% endblock %}
 
+{% set cat_icons = {
+    'Textbooks': '📚',
+    'Electronics': '⚡',
+    'Lab Equipment': '🧪',
+    'Stationery': '✏️',
+    'Study Materials': '📝',
+    'Sports Equipment': '🏸'
+} %}
+
 {% block content %}
 <section class="py-12">
     <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -19,7 +28,7 @@
             <div class="lg:col-span-2" data-animate>
                 <div class="glass rounded-3xl overflow-hidden aspect-square flex items-center justify-center relative">
                     <div class="absolute inset-0 bg-gradient-to-br from-indigo-500/10 via-purple-500/10 to-pink-500/10"></div>
-                    <span class="text-8xl relative z-10">📦</span>
+                    <span class="text-8xl relative z-10">{{ cat_icons.get(item.category.CategoryName, '📦') }}</span>
 
                     <!-- Status Overlay -->
                     {% if item.Status != 'Available' %}
@@ -37,14 +46,16 @@
 
             <!-- ── Item Details ── -->
             <div class="lg:col-span-3 space-y-6" data-animate>
-                <!-- Category & Condition -->
-                <div class="flex items-center gap-3">
+                <!-- Category & Info tags -->
+                <div class="flex items-center gap-3 flex-wrap">
                     <span class="px-3 py-1 rounded-lg bg-indigo-500/10 text-indigo-400 text-xs font-medium border border-indigo-500/20">
                         {{ item.category.CategoryName }}
                     </span>
+                    {% if item.DateListed %}
                     <span class="px-3 py-1 rounded-lg glass-light text-slate-300 text-xs font-medium">
-                        {{ item.category.CategoryName }}
+                        Listed {{ item.DateListed.strftime('%b %d, %Y') }}
                     </span>
+                    {% endif %}
                     <span class="px-3 py-1 rounded-lg
                         {% if item.Status == 'Available' %}badge-available
                         {% elif item.Status == 'Requested' %}badge-requested
@@ -108,7 +119,7 @@
                 <!-- Item Meta -->
                 <div class="grid grid-cols-3 gap-4">
                     <div class="glass rounded-2xl p-4 text-center">
-                        <i data-lucide="calendar" class="w-5 h-5 text-indigo-400 mx-auto mb-2"></i>
+                        <i data-lucide="activity" class="w-5 h-5 text-indigo-400 mx-auto mb-2"></i>
                         <p class="text-xs text-slate-400">Status</p>
                         <p class="text-sm font-medium text-white">{{ item.Status }}</p>
                     </div>

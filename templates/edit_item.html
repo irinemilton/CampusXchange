@@ -1,0 +1,141 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit — {{ item.Title }}{% endblock %}
+
+{% set cat_icons = {
+    'Textbooks': '📚',
+    'Electronics': '⚡',
+    'Lab Equipment': '🧪',
+    'Stationery': '✏️',
+    'Study Materials': '📝',
+    'Sports Equipment': '🏸'
+} %}
+
+{% block content %}
+<section class="py-12">
+    <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        <!-- Breadcrumb -->
+        <nav class="flex items-center gap-2 text-sm text-slate-500 mb-8" data-animate>
+            <a href="{{ url_for('dashboard') }}" class="hover:text-indigo-400 transition-colors">Dashboard</a>
+            <i data-lucide="chevron-right" class="w-3 h-3"></i>
+            <a href="{{ url_for('item_detail', item_id=item.ItemID) }}" class="hover:text-indigo-400 transition-colors">{{ item.Title }}</a>
+            <i data-lucide="chevron-right" class="w-3 h-3"></i>
+            <span class="text-slate-300">Edit</span>
+        </nav>
+
+        <!-- Page Header -->
+        <div class="mb-8" data-animate>
+            <h1 class="font-display text-3xl font-bold text-white flex items-center gap-3">
+                <span class="text-3xl">{{ cat_icons.get(item.category.CategoryName, '📦') }}</span>
+                Edit Listing
+            </h1>
+            <p class="text-slate-400 text-sm mt-1">Only available items can be edited.</p>
+        </div>
+
+        <!-- Form Card -->
+        <div class="glass rounded-3xl p-8" data-animate>
+            <form method="POST" action="{{ url_for('edit_item', item_id=item.ItemID) }}" class="space-y-6">
+
+                <!-- Title -->
+                <div>
+                    <label for="title" class="block text-sm font-medium text-slate-300 mb-2 flex items-center gap-2">
+                        <i data-lucide="type" class="w-4 h-4 text-indigo-400"></i>
+                        Title <span class="text-red-400">*</span>
+                    </label>
+                    <input type="text"
+                           id="title"
+                           name="title"
+                           value="{{ item.Title }}"
+                           required
+                           maxlength="100"
+                           placeholder="e.g. Data Structures & Algorithms"
+                           class="input-field w-full px-4 py-3 rounded-xl text-white placeholder-slate-500 text-sm">
+                </div>
+
+                <!-- Description -->
+                <div>
+                    <label for="description" class="block text-sm font-medium text-slate-300 mb-2 flex items-center gap-2">
+                        <i data-lucide="file-text" class="w-4 h-4 text-indigo-400"></i>
+                        Description
+                    </label>
+                    <textarea id="description"
+                              name="description"
+                              rows="4"
+                              maxlength="1000"
+                              placeholder="Describe the condition, edition, what's included..."
+                              class="input-field w-full px-4 py-3 rounded-xl text-white placeholder-slate-500 text-sm resize-none">{{ item.Description or '' }}</textarea>
+                </div>
+
+                <!-- Category + Credit Value row -->
+                <div class="grid sm:grid-cols-2 gap-4">
+                    <!-- Category -->
+                    <div>
+                        <label for="category_id" class="block text-sm font-medium text-slate-300 mb-2 flex items-center gap-2">
+                            <i data-lucide="tag" class="w-4 h-4 text-indigo-400"></i>
+                            Category <span class="text-red-400">*</span>
+                        </label>
+                        <select id="category_id"
+                                name="category_id"
+                                required
+                                class="input-field w-full px-4 py-3 rounded-xl text-white text-sm">
+                            {% for cat in categories %}
+                            <option value="{{ cat.CategoryID }}" {% if cat.CategoryID == item.CategoryID %}selected{% endif %}>
+                                {{ cat_icons.get(cat.CategoryName, '📦') }} {{ cat.CategoryName }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Credit Value -->
+                    <div>
+                        <label for="credit_value" class="block text-sm font-medium text-slate-300 mb-2 flex items-center gap-2">
+                            <i data-lucide="gem" class="w-4 h-4 text-emerald-400"></i>
+                            Credit Value <span class="text-red-400">*</span>
+                        </label>
+                        <div class="relative">
+                            <span class="absolute left-4 top-1/2 -translate-y-1/2 text-emerald-400 text-sm font-bold">💎</span>
+                            <input type="number"
+                                   id="credit_value"
+                                   name="credit_value"
+                                   value="{{ item.CreditValue }}"
+                                   required
+                                   min="1"
+                                   max="500"
+                                   class="input-field w-full pl-10 pr-4 py-3 rounded-xl text-white text-sm">
+                        </div>
+                        <p class="text-xs text-slate-500 mt-1.5">Range: 1 – 500 credits</p>
+                    </div>
+                </div>
+
+                <!-- Current listing info -->
+                <div class="glass-light rounded-2xl p-4 flex items-start gap-3">
+                    <i data-lucide="info" class="w-4 h-4 text-indigo-400 flex-shrink-0 mt-0.5"></i>
+                    <div class="text-xs text-slate-400 space-y-1">
+                        {% if item.DateListed %}
+                        <p>Listed on {{ item.DateListed.strftime('%B %d, %Y') }}</p>
+                        {% endif %}
+                        <p>Status: <span class="badge-available px-1.5 py-0.5 rounded text-xs font-medium">{{ item.Status }}</span></p>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex flex-col sm:flex-row gap-3 pt-2">
+                    <button type="submit"
+                            class="btn-primary flex-1 py-3.5 rounded-2xl text-sm font-semibold text-white flex items-center justify-center gap-2"
+                            id="save-item-btn">
+                        <i data-lucide="save" class="w-4 h-4"></i>
+                        <span>Save Changes</span>
+                    </button>
+                    <a href="{{ url_for('item_detail', item_id=item.ItemID) }}"
+                       class="btn-secondary flex-1 py-3.5 rounded-2xl text-sm font-semibold text-slate-300 flex items-center justify-center gap-2">
+                        <i data-lucide="x" class="w-4 h-4"></i>
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+
+    </div>
+</section>
+{% endblock %}

@@ -44,12 +44,6 @@ def health_check():
         return jsonify({'status': 'unhealthy', 'error': str(e)}), 500
 
 
-# ── Initialize DB ───────────────────────────────────────────
-with app.app_context():
-    db.create_all()
-    seed_all()
-
-
 # ══════════════════════════════════════════════════════════════
 #  ROUTES
 # ══════════════════════════════════════════════════════════════
@@ -689,4 +683,7 @@ def error_500(e):
 #  RUN
 # ══════════════════════════════════════════════════════════════
 if __name__ == '__main__':
+    with app.app_context():
+        db.create_all()
+        seed_all()
     app.run(debug=True, port=5000)

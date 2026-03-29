@@ -5,7 +5,7 @@ Five primary entities: Student, Category, Item, ExchangeTransaction, CreditLedge
 Uses MySQL via PyMySQL connector.
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -82,7 +82,7 @@ class Item(db.Model):
     CreditValue = db.Column(db.Integer, nullable=False)
     Status = db.Column(db.Enum('Available', 'Requested', 'Exchanged'), default='Available', index=True)
     Condition = db.Column(db.Enum('New', 'Like New', 'Good', 'Fair'), default='Good', index=True)
-    DateListed = db.Column(db.DateTime, default=datetime.utcnow)
+    DateListed = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), index=True)
     ViewCount = db.Column(db.Integer, default=0)
 
     # Foreign Keys
@@ -105,7 +105,7 @@ class ExchangeTransaction(db.Model):
     __tablename__ = 'exchange_transaction'
 
     TransactionID = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    TransactionDate = db.Column(db.DateTime, default=datetime.utcnow, index=True)
+    TransactionDate = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), index=True)
     Status = db.Column(db.Enum('Pending', 'Completed', 'Cancelled'), default='Pending', index=True)
 
     # Foreign Keys

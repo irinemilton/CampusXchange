@@ -162,6 +162,7 @@
             padding: 1px;
             background: linear-gradient(135deg, #6366f1, #a855f7, #ec4899);
             -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
             -webkit-mask-composite: xor;
             mask-composite: exclude;
             pointer-events: none;
@@ -419,9 +420,12 @@
                             </a>
                             {% endif %}
                             <hr class="border-white/10 my-2">
-                            <a href="{{ url_for('logout') }}" class="flex items-center gap-3 px-3 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-xl transition-all">
-                                <i data-lucide="log-out" class="w-4 h-4"></i> Sign Out
-                            </a>
+                            <form method="POST" action="{{ url_for('logout') }}">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="w-full flex items-center gap-3 px-3 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-xl transition-all">
+                                    <i data-lucide="log-out" class="w-4 h-4"></i> Sign Out
+                                </button>
+                            </form>
                         </div>
                     </div>
                     {% else %}
@@ -456,7 +460,10 @@
                 <a href="{{ url_for('profile') }}" class="block px-3 py-2 text-sm text-slate-300 hover:text-white hover:bg-white/5 rounded-lg">My Profile</a>
                 <a href="{{ url_for('transactions') }}" class="block px-3 py-2 text-sm text-slate-300 hover:text-white hover:bg-white/5 rounded-lg">History</a>
                 <a href="{{ url_for('new_item') }}" class="block px-3 py-2 text-sm text-slate-300 hover:text-white hover:bg-white/5 rounded-lg">List Item</a>
-                <a href="{{ url_for('logout') }}" class="block px-3 py-2 text-sm text-red-400 hover:bg-red-500/10 rounded-lg">Sign Out</a>
+                <form method="POST" action="{{ url_for('logout') }}">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <button type="submit" class="w-full text-left block px-3 py-2 text-sm text-red-400 hover:bg-red-500/10 rounded-lg">Sign Out</button>
+                </form>
                 {% else %}
                 <a href="{{ url_for('login') }}" class="block px-3 py-2 text-sm text-slate-300 hover:text-white hover:bg-white/5 rounded-lg">Sign In</a>
                 <a href="{{ url_for('register') }}" class="block px-3 py-2 text-sm text-indigo-400 hover:bg-indigo-500/10 rounded-lg">Get Started</a>

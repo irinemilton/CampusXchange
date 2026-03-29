@@ -57,6 +57,7 @@
                 <p class="text-slate-400 text-sm mb-6 max-w-md">Manually grant or deduct credits for any student. Useful for demoing or resolving issues.</p>
                 
                 <form action="{{ url_for('adjust_balance') }}" method="POST" class="flex flex-wrap items-end gap-4">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <div class="flex-1 min-w-[200px]">
                         <label class="block text-[10px] font-bold text-slate-500 uppercase mb-2 ml-1">Select Student</label>
                         <select name="student_id" required class="input-field w-full px-4 py-2.5 rounded-xl text-sm bg-black/40 border-white/10 text-white outline-none focus:border-amber-500/50">

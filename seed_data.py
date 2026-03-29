@@ -89,4 +89,4 @@ def seed_all():
     """Run all seeders"""
     seed_categories()
     seed_demo_data()
-    print("✅ Database seeded successfully!")
+    print("Database seeded successfully!")

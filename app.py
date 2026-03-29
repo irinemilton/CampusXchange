@@ -8,6 +8,7 @@ from datetime import datetime
 import random
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
+from flask_wtf.csrf import CSRFProtect
 from models import db, Student, Category, Item, ExchangeTransaction, CreditLedger
 from config import Config
 from seed_data import seed_all
@@ -20,6 +21,7 @@ app = Flask(__name__)
 app.config.from_object(Config)
 
 db.init_app(app)
+csrf = CSRFProtect(app)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -30,6 +32,16 @@ login_manager.login_message_category = 'info'
 @login_manager.user_loader
 def load_user(user_id):
     return db.session.get(Student, int(user_id))
+
+
+# ── Health Check ─────────────────────────────────────────────
+@app.route('/health')
+def health_check():
+    try:
+        db.session.execute(db.text('SELECT 1'))
+        return jsonify({'status': 'healthy', 'database': 'connected'}), 200
+    except Exception as e:
+        return jsonify({'status': 'unhealthy', 'error': str(e)}), 500
 
 
 # ── Initialize DB ───────────────────────────────────────────
@@ -88,14 +100,19 @@ def register():
             flash('Email already registered.', 'error')
             return redirect(url_for('register'))
 
-        student = Student(Name=name, Email=email, CreditBalance=100)
-        student.set_password(password)
-        db.session.add(student)
-        db.session.commit()
-
-        login_user(student)
-        flash(f'Welcome to CampusXchange, {name}! You received 100 starter credits.', 'success')
-        return redirect(url_for('dashboard'))
+        try:
+            student = Student(Name=name, Email=email, CreditBalance=100)
+            student.set_password(password)
+            db.session.add(student)
+            db.session.commit()
+            
+            login_user(student)
+            flash(f'Welcome to CampusXchange, {name}! You received 100 starter credits.', 'success')
+            return redirect(url_for('dashboard'))
+        except Exception as e:
+            db.session.rollback()
+            flash('An error occurred during registration. Please try again.', 'error')
+            return redirect(url_for('register'))
 
     return render_template('register.html')
 
@@ -121,7 +138,7 @@ def login():
     return render_template('login.html')
 
 
-@app.route('/logout')
+@app.route('/logout', methods=['GET', 'POST'])
 @login_required
 def logout():
     logout_user()
@@ -215,6 +232,14 @@ def new_item():
             flash('Title, credit value, and category are required.', 'error')
             return redirect(url_for('new_item'))
 
+        if len(title) > 100:
+            flash('Title is too long (max 100 chars).', 'error')
+            return redirect(url_for('new_item'))
+
+        if credit_value < 1:
+            flash('Credit value must be at least 1.', 'error')
+            return redirect(url_for('new_item'))
+
         item = Item(
             Title=title,
             Description=description,
@@ -284,21 +309,22 @@ def request_exchange(item_id):
         return redirect(url_for('item_detail', item_id=item_id))
 
     # Create transaction
-    transaction = ExchangeTransaction(
-        ItemID=item_id,
-        Giver_StudentID=item.Owner_StudentID,
-        Receiver_StudentID=current_user.StudentID,
-        Status='Pending'
-    )
-
-    # Update item status
-    item.Status = 'Requested'
-
-    db.session.add(transaction)
-    db.session.commit()
-
-    flash(f'Exchange request sent for "{item.Title}"!', 'success')
-    return redirect(url_for('dashboard'))
+    try:
+        transaction = ExchangeTransaction(
+            ItemID=item_id,
+            Giver_StudentID=item.Owner_StudentID,
+            Receiver_StudentID=current_user.StudentID,
+            Status='Pending'
+        )
+        item.Status = 'Requested'
+        db.session.add(transaction)
+        db.session.commit()
+        flash('Exchange request sent successfully!', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash('Failed to send request. Please try again.', 'error')
+    
+    return redirect(url_for('item_detail', item_id=item_id))
 
 
 # ── Accept/Reject Exchange ───────────────────────────────────
@@ -555,6 +581,14 @@ def edit_item(item_id):
 
         if not all([title, credit_value, category_id]):
             flash('Title, credit value, and category are required.', 'error')
+            return redirect(url_for('edit_item', item_id=item_id))
+
+        if len(title) > 100:
+            flash('Title is too long (max 100 chars).', 'error')
+            return redirect(url_for('edit_item', item_id=item_id))
+
+        if credit_value < 1:
+            flash('Credit value must be at least 1.', 'error')
             return redirect(url_for('edit_item', item_id=item_id))
 
         item.Title = title

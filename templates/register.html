@@ -26,7 +26,8 @@
 
         <!-- Form Card -->
         <div class="glass rounded-3xl p-8">
-            <form method="POST" action="{{ url_for('register') }}" class="space-y-5" id="register-form">
+            <form method="POST" action="{{ url_for('register') }}" class="space-y-6" id="register-form">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <!-- Name -->
                 <div>
                     <label class="block text-sm font-medium text-slate-300 mb-2">Full Name</label>

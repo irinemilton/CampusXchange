@@ -23,7 +23,7 @@ class Student(UserMixin, db.Model):
 
     StudentID = db.Column(db.Integer, primary_key=True, autoincrement=True)
     Name = db.Column(db.String(100), nullable=False)
-    Email = db.Column(db.String(100), nullable=False, unique=True)
+    Email = db.Column(db.String(100), nullable=False, unique=True, index=True)
     PasswordHash = db.Column(db.String(255), nullable=False)
     CreditBalance = db.Column(db.Integer, default=0)
     Bio = db.Column(db.Text, nullable=True)
@@ -80,8 +80,8 @@ class Item(db.Model):
     Title = db.Column(db.String(100), nullable=False)
     Description = db.Column(db.Text, nullable=True)
     CreditValue = db.Column(db.Integer, nullable=False)
-    Status = db.Column(db.Enum('Available', 'Requested', 'Exchanged'), default='Available')
-    Condition = db.Column(db.Enum('New', 'Like New', 'Good', 'Fair'), default='Good')
+    Status = db.Column(db.Enum('Available', 'Requested', 'Exchanged'), default='Available', index=True)
+    Condition = db.Column(db.Enum('New', 'Like New', 'Good', 'Fair'), default='Good', index=True)
     DateListed = db.Column(db.DateTime, default=datetime.utcnow)
     ViewCount = db.Column(db.Integer, default=0)
 
@@ -105,8 +105,8 @@ class ExchangeTransaction(db.Model):
     __tablename__ = 'exchange_transaction'
 
     TransactionID = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    TransactionDate = db.Column(db.DateTime, default=datetime.utcnow)
-    Status = db.Column(db.Enum('Pending', 'Completed', 'Cancelled'), default='Pending')
+    TransactionDate = db.Column(db.DateTime, default=datetime.utcnow, index=True)
+    Status = db.Column(db.Enum('Pending', 'Completed', 'Cancelled'), default='Pending', index=True)
 
     # Foreign Keys
     ItemID = db.Column(db.Integer, db.ForeignKey('item.ItemID'))

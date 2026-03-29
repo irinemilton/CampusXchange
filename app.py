@@ -10,6 +10,7 @@ from flask_login import LoginManager, login_user, logout_user, login_required, c
 from models import db, Student, Category, Item, ExchangeTransaction, CreditLedger
 from config import Config
 from seed_data import seed_all
+import re
 
 ITEMS_PER_PAGE = 12
 
@@ -70,8 +71,8 @@ def register():
             flash('All fields are required.', 'error')
             return redirect(url_for('register'))
 
-        if not email.lower().endswith('.edu'):
-            flash('Only university .edu email addresses are allowed.', 'error')
+        if not re.search(r'\.edu(\.|$)', email.lower().split('@')[-1]):
+            flash('Only university .edu email addresses are allowed (e.g. you@college.edu.in).', 'error')
             return redirect(url_for('register'))
 
         if password != confirm:

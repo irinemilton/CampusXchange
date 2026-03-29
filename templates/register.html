@@ -44,9 +44,9 @@
                     <div class="relative">
                         <i data-lucide="mail" class="w-4 h-4 text-slate-500 absolute left-4 top-1/2 -translate-y-1/2" id="email-icon"></i>
                         <input type="email" name="email" id="reg-email" required
-                               pattern=".+\.edu$"
+                               pattern=".+@.+\.edu(\..+)?$"
                                class="input-field w-full pl-11 pr-10 py-3 rounded-xl text-sm text-white placeholder-slate-500"
-                               placeholder="you@university.edu">
+                               placeholder="you@college.edu.in">
                         <span id="email-check" class="absolute right-4 top-1/2 -translate-y-1/2 hidden">
                             <i data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i>
                         </span>
@@ -136,6 +136,11 @@
     const emailHint = document.getElementById('email-hint');
     const emailCheck = document.getElementById('email-check');
 
+    function isEduEmail(val) {
+        const domain = val.split('@')[1] || '';
+        return /\.edu(\.| |$)/.test(domain) || domain.endsWith('.edu');
+    }
+
     emailInput.addEventListener('input', function() {
         const val = this.value.trim().toLowerCase();
         if (!val) {
@@ -144,14 +149,14 @@
             this.classList.remove('ring-2', 'ring-red-500/40', 'ring-emerald-500/40');
             return;
         }
-        if (val.endsWith('.edu')) {
+        if (isEduEmail(val)) {
             emailHint.textContent = '✓ Valid university email';
             emailHint.className = 'text-xs mt-1.5 text-emerald-400';
             emailCheck.classList.remove('hidden');
             this.classList.remove('ring-2', 'ring-red-500/40');
             this.classList.add('ring-2', 'ring-emerald-500/40');
         } else {
-            emailHint.textContent = '✗ Must be a .edu university email address';
+            emailHint.textContent = '✗ Must be a .edu university email (e.g. you@college.edu.in)';
             emailHint.className = 'text-xs mt-1.5 text-red-400';
             emailCheck.classList.add('hidden');
             this.classList.remove('ring-2', 'ring-emerald-500/40');
@@ -186,7 +191,7 @@
         const pass = document.getElementById('reg-password').value;
         const confirm = document.getElementById('reg-confirm').value;
 
-        if (!email.endsWith('.edu')) {
+        if (!isEduEmail(email)) {
             e.preventDefault();
             document.getElementById('reg-email').dispatchEvent(new Event('input'));
             document.getElementById('reg-email').focus();

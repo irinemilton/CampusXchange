@@ -158,6 +158,7 @@ def marketplace():
     category_id = request.args.get('category', type=int)
     search = request.args.get('search', '')
     sort = request.args.get('sort', 'newest')
+    condition = request.args.get('condition', '')
     page = request.args.get('page', 1, type=int)
 
     query = Item.query.filter_by(Status='Available')
@@ -170,6 +171,9 @@ def marketplace():
             (Item.Title.ilike(f'%{search}%')) |
             (Item.Description.ilike(f'%{search}%'))
         )
+
+    if condition in ('New', 'Like New', 'Good', 'Fair'):
+        query = query.filter_by(Condition=condition)
 
     if sort == 'price_low':
         query = query.order_by(Item.CreditValue.asc())
@@ -189,8 +193,10 @@ def marketplace():
                            pagination=pagination,
                            categories=categories,
                            selected_category=category_id,
+                           selected_condition=condition,
                            search=search,
                            sort=sort)
+
 
 
 # ── List New Item ────────────────────────────────────────────
@@ -537,6 +543,7 @@ def edit_item(item_id):
         description = request.form.get('description', '').strip()
         credit_value = request.form.get('credit_value', type=int)
         category_id = request.form.get('category_id', type=int)
+        condition = request.form.get('condition', 'Good')
 
         if not all([title, credit_value, category_id]):
             flash('Title, credit value, and category are required.', 'error')
@@ -546,6 +553,7 @@ def edit_item(item_id):
         item.Description = description
         item.CreditValue = credit_value
         item.CategoryID = category_id
+        item.Condition = condition
         db.session.commit()
 
         flash(f'"{title}" updated successfully!', 'success')

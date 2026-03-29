@@ -75,7 +75,25 @@
                             </select>
                         </div>
 
+                        <!-- Condition Filter -->
+                        <div class="mb-5">
+                            <label class="block text-xs font-medium text-slate-400 mb-3">Condition</label>
+                            <div class="space-y-1">
+                                <a href="{{ url_for('marketplace', search=search, sort=sort, category=selected_category or '') }}"
+                                   class="flex items-center gap-2 px-3 py-2 rounded-xl text-sm transition-all {% if not selected_condition %}bg-indigo-500/10 text-indigo-300 border border-indigo-500/20{% else %}text-slate-400 hover:bg-white/5 hover:text-slate-200{% endif %}">
+                                    <span class="text-sm">✨</span><span>Any Condition</span>
+                                </a>
+                                {% for cond, badge in [('New','🟢'),('Like New','🔵'),('Good','🟡'),('Fair','🟠')] %}
+                                <a href="{{ url_for('marketplace', condition=cond, search=search, sort=sort, category=selected_category or '') }}"
+                                   class="flex items-center gap-2 px-3 py-2 rounded-xl text-sm transition-all {% if selected_condition == cond %}bg-indigo-500/10 text-indigo-300 border border-indigo-500/20{% else %}text-slate-400 hover:bg-white/5 hover:text-slate-200{% endif %}">
+                                    <span>{{ badge }}</span><span>{{ cond }}</span>
+                                </a>
+                                {% endfor %}
+                            </div>
+                        </div>
+
                         <input type="hidden" name="category" value="{{ selected_category or '' }}">
+                        <input type="hidden" name="condition" value="{{ selected_condition or '' }}">
                         <button type="submit" class="btn-primary w-full py-2.5 rounded-xl text-sm font-medium text-white" id="apply-filters-btn">
                             <span>Apply Filters</span>
                         </button>
@@ -116,7 +134,19 @@
 
                         <!-- Item Body -->
                         <div class="p-5">
-                            <span class="text-xs text-indigo-400 font-medium">{{ item.category.CategoryName }}</span>
+                            <div class="flex items-center gap-2 mb-1">
+                                <span class="text-xs text-indigo-400 font-medium">{{ item.category.CategoryName }}</span>
+                                {% if item.Condition %}
+                                <span class="text-xs px-1.5 py-0.5 rounded glass-light
+                                    {% if item.Condition == 'New' %}text-emerald-400
+                                    {% elif item.Condition == 'Like New' %}text-indigo-400
+                                    {% elif item.Condition == 'Good' %}text-amber-400
+                                    {% else %}text-orange-400{% endif %}">
+                                    {% if item.Condition == 'New' %}🟢{% elif item.Condition == 'Like New' %}🔵{% elif item.Condition == 'Good' %}🟡{% else %}🟠{% endif %}
+                                    {{ item.Condition }}
+                                </span>
+                                {% endif %}
+                            </div>
                             <h3 class="font-semibold text-white group-hover:text-indigo-300 transition-colors mt-1 truncate">{{ item.Title }}</h3>
                             <p class="text-xs text-slate-500 mt-1 line-clamp-2">{{ item.Description or 'No description.' }}</p>
 
@@ -151,7 +181,7 @@
                 {% if pagination and pagination.pages > 1 %}
                 <div class="flex items-center justify-center gap-2 mt-10">
                     {% if pagination.has_prev %}
-                    <a href="{{ url_for('marketplace', page=pagination.prev_num, category=selected_category or '', search=search, sort=sort) }}"
+                    <a href="{{ url_for('marketplace', page=pagination.prev_num, category=selected_category or '', condition=selected_condition or '', search=search, sort=sort) }}"
                        class="px-4 py-2 rounded-xl glass text-sm text-slate-300 hover:text-white hover:bg-white/5 flex items-center gap-2 transition-all">
                         <i data-lucide="chevron-left" class="w-4 h-4"></i> Prev
                     </a>
@@ -160,7 +190,7 @@
                         Page {{ pagination.page }} of {{ pagination.pages }}
                     </span>
                     {% if pagination.has_next %}
-                    <a href="{{ url_for('marketplace', page=pagination.next_num, category=selected_category or '', search=search, sort=sort) }}"
+                    <a href="{{ url_for('marketplace', page=pagination.next_num, category=selected_category or '', condition=selected_condition or '', search=search, sort=sort) }}"
                        class="px-4 py-2 rounded-xl glass text-sm text-slate-300 hover:text-white hover:bg-white/5 flex items-center gap-2 transition-all">
                         Next <i data-lucide="chevron-right" class="w-4 h-4"></i>
                     </a>

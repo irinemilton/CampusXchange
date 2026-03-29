@@ -109,6 +109,7 @@
                     </div>
 
                     {% if ledger %}
+                    {% set ns = namespace(balance=current_user.CreditBalance) %}
                     <div class="space-y-2">
                         {% for entry in ledger %}
                         <div class="flex items-center gap-3 p-3 rounded-xl glass-light">
@@ -123,13 +124,9 @@
                             <div class="flex-1 min-w-0">
                                 <p class="text-xs font-semibold
                                     {% if entry.TransactionType == 'Credit' %}text-emerald-400{% else %}text-red-400{% endif %}">
-                                    {{ entry.TransactionType }} • {% if entry.TransactionType == 'Credit' %}+{% else %}-{% endif %}{{ entry.Amount }}
+                                    {% if entry.TransactionType == 'Credit' %}+{% else %}-{% endif %}{{ entry.Amount }} credits
                                 </p>
                                 <p class="text-xs text-slate-500">{{ entry.EntryDate.strftime('%b %d, %I:%M %p') if entry.EntryDate else '' }}</p>
-                            </div>
-                            <div class="text-right flex-shrink-0">
-                                <p class="text-xs text-slate-500">Bal.</p>
-                                <p class="text-sm font-semibold text-white">{{ entry.Amount }}</p>
                             </div>
                         </div>
                         {% endfor %}

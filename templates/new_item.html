@@ -99,8 +99,11 @@
 
                 <!-- Description -->
                 <div>
-                    <label class="block text-sm font-medium text-slate-300 mb-2">Description</label>
-                    <textarea name="description" rows="4"
+                    <label class="block text-sm font-medium text-slate-300 mb-2 flex items-center justify-between">
+                        <span>Description</span>
+                        <span id="new-desc-count" class="text-xs text-slate-500">0 / 1000</span>
+                    </label>
+                    <textarea name="description" rows="4" maxlength="1000"
                               class="input-field w-full px-4 py-3 rounded-xl text-sm text-white placeholder-slate-500 resize-none"
                               placeholder="Describe the item's condition, any notes, edition number, etc." id="item-description"></textarea>
                 </div>
@@ -138,4 +141,32 @@
         </div>
     </div>
 </section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Live credit preview
+    const creditInput = document.getElementById('item-credit-value');
+    const creditPreview = document.getElementById('credit-preview');
+    if (creditInput && creditPreview) {
+        creditInput.addEventListener('input', function() {
+            const val = parseInt(this.value) || 0;
+            creditPreview.textContent = val > 0
+                ? `💎 Buyers will spend ${val} credits for this item`
+                : 'Set a fair value for this item';
+            creditPreview.className = 'text-xs mt-1 ' + (val > 0 ? 'text-emerald-400' : 'text-slate-500');
+        });
+    }
+
+    // Character counter on description
+    const descEl = document.getElementById('item-description');
+    const descCountEl = document.getElementById('new-desc-count');
+    if (descEl && descCountEl) {
+        descEl.addEventListener('input', function() {
+            const len = this.value.length;
+            descCountEl.textContent = len + ' / 1000';
+            descCountEl.className = 'text-xs ' + (len > 900 ? 'text-amber-400' : 'text-slate-500');
+        });
+    }
+</script>
 {% endblock %}

@@ -55,9 +55,12 @@
 
                 <!-- Description -->
                 <div>
-                    <label for="description" class="block text-sm font-medium text-slate-300 mb-2 flex items-center gap-2">
-                        <i data-lucide="file-text" class="w-4 h-4 text-indigo-400"></i>
-                        Description
+                    <label for="description" class="block text-sm font-medium text-slate-300 mb-2 flex items-center justify-between">
+                        <span class="flex items-center gap-2">
+                            <i data-lucide="file-text" class="w-4 h-4 text-indigo-400"></i>
+                            Description
+                        </span>
+                        <span id="desc-count" class="text-xs text-slate-500">0 / 1000</span>
                     </label>
                     <textarea id="description"
                               name="description"
@@ -65,6 +68,26 @@
                               maxlength="1000"
                               placeholder="Describe the condition, edition, what's included..."
                               class="input-field w-full px-4 py-3 rounded-xl text-white placeholder-slate-500 text-sm resize-none">{{ item.Description or '' }}</textarea>
+                </div>
+
+                <!-- Condition -->
+                <div>
+                    <label class="block text-sm font-medium text-slate-300 mb-2 flex items-center gap-2">
+                        <i data-lucide="star" class="w-4 h-4 text-amber-400"></i>
+                        Condition <span class="text-red-400">*</span>
+                    </label>
+                    <div class="grid grid-cols-4 gap-2">
+                        {% for cond, badge in [('New','🟢'),('Like New','🔵'),('Good','🟡'),('Fair','🟠')] %}
+                        <label class="cursor-pointer">
+                            <input type="radio" name="condition" value="{{ cond }}" class="hidden peer"
+                                   {% if item.Condition == cond %}checked{% endif %}>
+                            <div class="glass-light rounded-xl p-2.5 text-center peer-checked:bg-indigo-500/20 peer-checked:border-indigo-500/40 peer-checked:ring-1 peer-checked:ring-indigo-500/30 border border-transparent hover:bg-white/5 transition-all">
+                                <span class="text-sm">{{ badge }}</span>
+                                <span class="text-xs font-medium text-slate-300 block">{{ cond }}</span>
+                            </div>
+                        </label>
+                        {% endfor %}
+                    </div>
                 </div>
 
                 <!-- Category + Credit Value row -->
@@ -104,7 +127,7 @@
                                    max="500"
                                    class="input-field w-full pl-10 pr-4 py-3 rounded-xl text-white text-sm">
                         </div>
-                        <p class="text-xs text-slate-500 mt-1.5">Range: 1 – 500 credits</p>
+                        <p class="text-xs text-slate-500 mt-1.5" id="edit-credit-preview">Buyers will spend 💎 {{ item.CreditValue }} credits</p>
                     </div>
                 </div>
 
@@ -138,4 +161,27 @@
 
     </div>
 </section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Character counter on description
+    const desc = document.getElementById('description');
+    const descCount = document.getElementById('desc-count');
+    function updateDescCount() {
+        const len = desc.value.length;
+        descCount.textContent = len + ' / 1000';
+        descCount.className = 'text-xs ' + (len > 900 ? 'text-amber-400' : 'text-slate-500');
+    }
+    desc.addEventListener('input', updateDescCount);
+    updateDescCount();
+
+    // Live credit preview
+    const creditInput = document.getElementById('credit_value');
+    const creditPreview = document.getElementById('edit-credit-preview');
+    creditInput.addEventListener('input', function() {
+        const val = parseInt(this.value) || 0;
+        creditPreview.textContent = val > 0 ? `Buyers will spend 💎 ${val} credits` : 'Set a fair credit value';
+    });
+</script>
 {% endblock %}

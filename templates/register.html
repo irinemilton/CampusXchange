@@ -18,6 +18,10 @@
             </a>
             <h1 class="font-display text-3xl font-bold text-white mb-2">Join CampusXchange</h1>
             <p class="text-sm text-slate-400">Create your account & get <span class="text-emerald-400 font-semibold">100 free credits</span></p>
+            <div class="mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass text-xs text-indigo-300">
+                <i data-lucide="shield-check" class="w-3 h-3"></i>
+                University .edu emails only
+            </div>
         </div>
 
         <!-- Form Card -->
@@ -36,13 +40,18 @@
 
                 <!-- Email -->
                 <div>
-                    <label class="block text-sm font-medium text-slate-300 mb-2">College Email</label>
+                    <label class="block text-sm font-medium text-slate-300 mb-2">University Email</label>
                     <div class="relative">
-                        <i data-lucide="mail" class="w-4 h-4 text-slate-500 absolute left-4 top-1/2 -translate-y-1/2"></i>
+                        <i data-lucide="mail" class="w-4 h-4 text-slate-500 absolute left-4 top-1/2 -translate-y-1/2" id="email-icon"></i>
                         <input type="email" name="email" id="reg-email" required
-                               class="input-field w-full pl-11 pr-4 py-3 rounded-xl text-sm text-white placeholder-slate-500"
-                               placeholder="you@campus.edu">
+                               pattern=".+\.edu$"
+                               class="input-field w-full pl-11 pr-10 py-3 rounded-xl text-sm text-white placeholder-slate-500"
+                               placeholder="you@university.edu">
+                        <span id="email-check" class="absolute right-4 top-1/2 -translate-y-1/2 hidden">
+                            <i data-lucide="check-circle" class="w-4 h-4 text-emerald-400"></i>
+                        </span>
                     </div>
+                    <p id="email-hint" class="text-xs mt-1.5 hidden"></p>
                 </div>
 
                 <!-- Password -->
@@ -122,14 +131,71 @@
         });
     });
 
-    // Password match validation
+    // Live .edu email validation
+    const emailInput = document.getElementById('reg-email');
+    const emailHint = document.getElementById('email-hint');
+    const emailCheck = document.getElementById('email-check');
+
+    emailInput.addEventListener('input', function() {
+        const val = this.value.trim().toLowerCase();
+        if (!val) {
+            emailHint.classList.add('hidden');
+            emailCheck.classList.add('hidden');
+            this.classList.remove('ring-2', 'ring-red-500/40', 'ring-emerald-500/40');
+            return;
+        }
+        if (val.endsWith('.edu')) {
+            emailHint.textContent = '✓ Valid university email';
+            emailHint.className = 'text-xs mt-1.5 text-emerald-400';
+            emailCheck.classList.remove('hidden');
+            this.classList.remove('ring-2', 'ring-red-500/40');
+            this.classList.add('ring-2', 'ring-emerald-500/40');
+        } else {
+            emailHint.textContent = '✗ Must be a .edu university email address';
+            emailHint.className = 'text-xs mt-1.5 text-red-400';
+            emailCheck.classList.add('hidden');
+            this.classList.remove('ring-2', 'ring-emerald-500/40');
+            this.classList.add('ring-2', 'ring-red-500/40');
+        }
+    });
+
+    // Password match validation — no more browser alert
+    const confirmInput = document.getElementById('reg-confirm');
+    let matchMsg = document.createElement('p');
+    matchMsg.className = 'text-xs mt-1.5 hidden';
+    confirmInput.parentElement.after(matchMsg);
+
+    confirmInput.addEventListener('input', function() {
+        const pass = document.getElementById('reg-password').value;
+        if (!this.value) { matchMsg.classList.add('hidden'); return; }
+        if (this.value === pass) {
+            matchMsg.textContent = '✓ Passwords match';
+            matchMsg.className = 'text-xs mt-1.5 text-emerald-400';
+            this.classList.remove('ring-2', 'ring-red-500/40');
+            this.classList.add('ring-2', 'ring-emerald-500/40');
+        } else {
+            matchMsg.textContent = '✗ Passwords do not match';
+            matchMsg.className = 'text-xs mt-1.5 text-red-400';
+            this.classList.remove('ring-2', 'ring-emerald-500/40');
+            this.classList.add('ring-2', 'ring-red-500/40');
+        }
+    });
+
     document.getElementById('register-form').addEventListener('submit', function(e) {
+        const email = document.getElementById('reg-email').value.trim().toLowerCase();
         const pass = document.getElementById('reg-password').value;
         const confirm = document.getElementById('reg-confirm').value;
+
+        if (!email.endsWith('.edu')) {
+            e.preventDefault();
+            document.getElementById('reg-email').dispatchEvent(new Event('input'));
+            document.getElementById('reg-email').focus();
+            return;
+        }
         if (pass !== confirm) {
             e.preventDefault();
-            document.getElementById('reg-confirm').classList.add('ring-2', 'ring-red-500/50');
-            alert('Passwords do not match!');
+            document.getElementById('reg-confirm').dispatchEvent(new Event('input'));
+            document.getElementById('reg-confirm').focus();
         }
     });
 </script>

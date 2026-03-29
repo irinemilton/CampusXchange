@@ -70,11 +70,19 @@ def register():
             flash('All fields are required.', 'error')
             return redirect(url_for('register'))
 
+        if not email.lower().endswith('.edu'):
+            flash('Only university .edu email addresses are allowed.', 'error')
+            return redirect(url_for('register'))
+
         if password != confirm:
             flash('Passwords do not match.', 'error')
             return redirect(url_for('register'))
 
-        if Student.query.filter_by(Email=email).first():
+        if len(password) < 6:
+            flash('Password must be at least 6 characters.', 'error')
+            return redirect(url_for('register'))
+
+        if Student.query.filter_by(Email=email.lower()).first():
             flash('Email already registered.', 'error')
             return redirect(url_for('register'))
 

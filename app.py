@@ -91,16 +91,17 @@ def register():
             return redirect(url_for('register'))
 
         if Student.query.filter_by(Email=email.lower()).first():
-            flash('Email already registered.', 'error')
+            flash('This email is already registered. Please login or use a different email.', 'error')
             return redirect(url_for('register'))
 
         try:
-            student = Student(Name=name, Email=email, CreditBalance=100)
+            # Always store emails in lowercase for consistent lookup
+            student = Student(Name=name, Email=email.lower(), CreditBalance=100)
             student.set_password(password)
             db.session.add(student)
             db.session.commit()
             
-            login_user(student)
+            login_user(student, remember=True)
             flash(f'Welcome to CampusXchange, {name}! You received 100 starter credits.', 'success')
             return redirect(url_for('dashboard'))
         except Exception as e:
@@ -117,15 +118,33 @@ def login():
         return redirect(url_for('dashboard'))
 
     if request.method == 'POST':
-        email = request.form.get('email')
+        email = request.form.get('email', '').strip().lower()
         password = request.form.get('password')
+        remember = True if request.form.get('remember') else False
 
+        # Lookup is now case-insensitive
         student = Student.query.filter_by(Email=email).first()
-        if student and student.check_password(password):
-            login_user(student)
-            flash(f'Welcome back, {student.Name}!', 'success')
-            next_page = request.args.get('next')
-            return redirect(next_page or url_for('dashboard'))
+        
+        if student:
+            # Check if account is blocked (for demonstration, we only lock locally)
+            if student.FailedLoginAttempts >= 5:
+                flash('Account locked due to too many failed attempts. Contact admin.', 'error')
+                return redirect(url_for('login'))
+
+            if student.check_password(password):
+                # SUCCESS
+                student.FailedLoginAttempts = 0
+                db.session.commit()
+                
+                login_user(student, remember=remember)
+                flash(f'Welcome back, {student.Name}!', 'success')
+                next_page = request.args.get('next')
+                return redirect(next_page or url_for('dashboard'))
+            else:
+                # FAILURE
+                student.FailedLoginAttempts += 1
+                db.session.commit()
+                flash('Invalid email or password.', 'error')
         else:
             flash('Invalid email or password.', 'error')
 

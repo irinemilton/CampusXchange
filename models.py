@@ -27,6 +27,7 @@ class Student(UserMixin, db.Model):
     PasswordHash = db.Column(db.String(255), nullable=False)
     CreditBalance = db.Column(db.Integer, default=0)
     Bio = db.Column(db.Text, nullable=True)
+    FailedLoginAttempts = db.Column(db.Integer, default=0)
 
     # Relationships
     items = db.relationship('Item', backref='owner', lazy='dynamic',

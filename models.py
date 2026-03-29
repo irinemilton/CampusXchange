@@ -26,6 +26,7 @@ class Student(UserMixin, db.Model):
     Email = db.Column(db.String(100), nullable=False, unique=True)
     PasswordHash = db.Column(db.String(255), nullable=False)
     CreditBalance = db.Column(db.Integer, default=0)
+    Bio = db.Column(db.Text, nullable=True)
 
     # Relationships
     items = db.relationship('Item', backref='owner', lazy='dynamic',
@@ -82,6 +83,7 @@ class Item(db.Model):
     Status = db.Column(db.Enum('Available', 'Requested', 'Exchanged'), default='Available')
     Condition = db.Column(db.Enum('New', 'Like New', 'Good', 'Fair'), default='Good')
     DateListed = db.Column(db.DateTime, default=datetime.utcnow)
+    ViewCount = db.Column(db.Integer, default=0)
 
     # Foreign Keys
     CategoryID = db.Column(db.Integer, db.ForeignKey('category.CategoryID'))

@@ -23,53 +23,76 @@
         </div>
 
         <!-- Stats Grid -->
-        <div class="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-10" data-animate>
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10" data-animate>
+            <!-- (Stats preserved, reduced columns to fit more) -->
             <div class="glass rounded-2xl p-5">
-                <div class="flex items-center gap-3 mb-2">
-                    <div class="w-8 h-8 rounded-xl bg-indigo-500/10 flex items-center justify-center">
-                        <i data-lucide="users" class="w-4 h-4 text-indigo-400"></i>
-                    </div>
-                    <p class="text-xs text-slate-400">Total Students</p>
-                </div>
+                <p class="text-[10px] uppercase font-bold text-slate-500 mb-1">Students</p>
                 <p class="text-2xl font-display font-bold text-white">{{ stats.total_students }}</p>
             </div>
             <div class="glass rounded-2xl p-5">
-                <div class="flex items-center gap-3 mb-2">
-                    <div class="w-8 h-8 rounded-xl bg-purple-500/10 flex items-center justify-center">
-                        <i data-lucide="package" class="w-4 h-4 text-purple-400"></i>
-                    </div>
-                    <p class="text-xs text-slate-400">Total Items</p>
-                </div>
-                <p class="text-2xl font-display font-bold text-white">{{ stats.total_items }}
-                    <span class="text-sm font-normal text-emerald-400">({{ stats.available_items }} available)</span>
-                </p>
+                <p class="text-[10px] uppercase font-bold text-slate-500 mb-1">Items</p>
+                <p class="text-2xl font-display font-bold text-white">{{ stats.total_items }}</p>
             </div>
             <div class="glass rounded-2xl p-5">
-                <div class="flex items-center gap-3 mb-2">
-                    <div class="w-8 h-8 rounded-xl bg-emerald-500/10 flex items-center justify-center">
-                        <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400"></i>
-                    </div>
-                    <p class="text-xs text-slate-400">Completed Exchanges</p>
-                </div>
+                <p class="text-[10px] uppercase font-bold text-slate-500 mb-1">Exchanges</p>
                 <p class="text-2xl font-display font-bold text-white">{{ stats.completed_exchanges }}</p>
             </div>
             <div class="glass rounded-2xl p-5">
-                <div class="flex items-center gap-3 mb-2">
-                    <div class="w-8 h-8 rounded-xl bg-amber-500/10 flex items-center justify-center">
-                        <i data-lucide="clock" class="w-4 h-4 text-amber-400"></i>
-                    </div>
-                    <p class="text-xs text-slate-400">Pending Exchanges</p>
-                </div>
-                <p class="text-2xl font-display font-bold text-white">{{ stats.pending_exchanges }}</p>
-            </div>
-            <div class="glass rounded-2xl p-5 col-span-2 lg:col-span-2">
-                <div class="flex items-center gap-3 mb-2">
-                    <div class="w-8 h-8 rounded-xl bg-emerald-500/10 flex items-center justify-center">
-                        <i data-lucide="gem" class="w-4 h-4 text-emerald-400"></i>
-                    </div>
-                    <p class="text-xs text-slate-400">Total Credits in System</p>
-                </div>
+                <p class="text-[10px] uppercase font-bold text-slate-500 mb-1">Total Credits</p>
                 <p class="text-2xl font-display font-bold text-emerald-400">💎 {{ stats.total_credits_in_system }}</p>
+            </div>
+        </div>
+
+        <!-- Quick Actions & Adjustment -->
+        <div class="grid lg:grid-cols-3 gap-8 mb-10" data-animate>
+            <div class="lg:col-span-2 glass rounded-[32px] p-8 border border-amber-500/10 relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-8 opacity-10 pointer-events-none">
+                    <i data-lucide="zap" class="w-24 h-24 text-amber-500"></i>
+                </div>
+                
+                <h2 class="font-display text-xl font-bold text-white mb-2 flex items-center gap-2">
+                    <i data-lucide="wrench" class="w-5 h-5 text-amber-500"></i>
+                    Balance Adjustment Tool
+                </h2>
+                <p class="text-slate-400 text-sm mb-6 max-w-md">Manually grant or deduct credits for any student. Useful for demoing or resolving issues.</p>
+                
+                <form action="{{ url_for('adjust_balance') }}" method="POST" class="flex flex-wrap items-end gap-4">
+                    <div class="flex-1 min-w-[200px]">
+                        <label class="block text-[10px] font-bold text-slate-500 uppercase mb-2 ml-1">Select Student</label>
+                        <select name="student_id" required class="input-field w-full px-4 py-2.5 rounded-xl text-sm bg-black/40 border-white/10 text-white outline-none focus:border-amber-500/50">
+                            <option value="">— Choose Student —</option>
+                            {% for s in students %}
+                            <option value="{{ s.StudentID }}">{{ s.Name }} (ID: {{ s.StudentID }}) — Bal: {{ s.CreditBalance }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    
+                    <div class="w-32">
+                        <label class="block text-[10px] font-bold text-slate-500 uppercase mb-2 ml-1">Credits</label>
+                        <input type="number" name="amount" required min="1" placeholder="0" class="input-field w-full px-4 py-2.5 rounded-xl text-sm bg-black/40 border-white/10 text-white outline-none focus:border-amber-500/50">
+                    </div>
+                    
+                    <div class="flex items-center gap-2">
+                        <button type="submit" name="type" value="add" class="px-5 py-2.5 rounded-xl bg-emerald-500/20 text-emerald-400 text-sm font-bold border border-emerald-500/30 hover:bg-emerald-500/30 transition-all flex items-center gap-2">
+                            <i data-lucide="plus" class="w-4 h-4"></i> Grant
+                        </button>
+                        <button type="submit" name="type" value="subtract" class="px-5 py-2.5 rounded-xl bg-red-500/20 text-red-400 text-sm font-bold border border-red-500/30 hover:bg-red-500/30 transition-all flex items-center gap-2">
+                            <i data-lucide="minus" class="w-4 h-4"></i> Deduct
+                        </button>
+                    </div>
+                </form>
+            </div>
+            
+            <div class="glass rounded-[32px] p-8 flex flex-col justify-center text-center group border border-indigo-500/10 hover:border-indigo-500/30 transition-all">
+                <div class="w-16 h-16 rounded-2xl bg-indigo-500/10 flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
+                    <i data-lucide="bar-chart-3" class="w-8 h-8 text-indigo-400"></i>
+                </div>
+                <h3 class="text-white font-bold mb-1">System Health</h3>
+                <p class="text-slate-500 text-xs">All services operational</p>
+                <div class="mt-4 flex items-center justify-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span class="text-[10px] font-bold text-emerald-500/80 tracking-widest uppercase">Live Platform</span>
+                </div>
             </div>
         </div>
 

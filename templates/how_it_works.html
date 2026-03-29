@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+
+{% block title %}How It Works{% endblock %}
+
+{% block content %}
+<section class="py-20 relative overflow-hidden">
+    <!-- Background Accents -->
+    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full -z-10 opacity-20 pointer-events-none">
+        <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-indigo-500 rounded-full blur-[120px]"></div>
+        <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-purple-500 rounded-full blur-[120px]"></div>
+    </div>
+
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center" data-animate>
+        <h1 class="font-display text-5xl md:text-6xl font-bold text-white mb-6">
+            Connecting Campus through <br>
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">Values & Community</span>
+        </h1>
+        <p class="text-xl text-slate-400 max-w-2xl mx-auto mb-16">
+            CampusXchange is a decentralized barter platform designed for students to exchange academic resources using virtual credits.
+        </p>
+
+        <!-- Steps Grid -->
+        <div class="grid md:grid-cols-3 gap-8 text-left mb-24">
+            <!-- Step 1 -->
+            <div class="glass rounded-3xl p-8 border border-white/10 hover:border-indigo-500/30 transition-all duration-500 group">
+                <div class="w-14 h-14 rounded-2xl bg-indigo-500/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                    <i data-lucide="list" class="w-7 h-7 text-indigo-400"></i>
+                </div>
+                <h3 class="font-display text-xl font-bold text-white mb-4">1. List Your Items</h3>
+                <p class="text-slate-400 text-sm leading-relaxed">
+                    Have an old textbook or lab coat? List it on the marketplace. Set a fair credit value and category to help others find it.
+                </p>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="glass rounded-3xl p-8 border border-white/10 hover:border-purple-500/30 transition-all duration-500 group">
+                <div class="w-14 h-14 rounded-2xl bg-purple-500/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                    <i data-lucide="repeat" class="w-7 h-7 text-purple-400"></i>
+                </div>
+                <h3 class="font-display text-xl font-bold text-white mb-4">2. Engage in Barter</h3>
+                <p class="text-slate-400 text-sm leading-relaxed">
+                    Browse the marketplace for what you need. Request an exchange and use your virtual credits to acquire resources.
+                </p>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="glass rounded-3xl p-8 border border-white/10 hover:border-emerald-500/30 transition-all duration-500 group">
+                <div class="w-14 h-14 rounded-2xl bg-emerald-500/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                    <i data-lucide="trending-up" class="w-7 h-7 text-emerald-400"></i>
+                </div>
+                <h3 class="font-display text-xl font-bold text-white mb-4">3. Build Your Credits</h3>
+                <p class="text-slate-400 text-sm leading-relaxed">
+                    Every successful exchange earns you credits. Rank up on the leaderboard and become a top contributor in your campus community.
+                </p>
+            </div>
+        </div>
+
+        <!-- Vision Section -->
+        <div class="glass rounded-[40px] p-12 text-left relative overflow-hidden" data-animate>
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div>
+                    <h2 class="font-display text-3xl font-bold text-white mb-6">Our Vision for Campus Economy</h2>
+                    <p class="text-slate-400 mb-6 leading-relaxed">
+                        We believe that academic resources should stay within the campus ecosystem. By removing the dependency on cash and focusing on virtual credits, we promote sustainability and resource accessibility for every student.
+                    </p>
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-6 h-6 rounded-full bg-indigo-500/20 flex items-center justify-center">
+                                <i data-lucide="check" class="w-4 h-4 text-indigo-400"></i>
+                            </div>
+                            <span class="text-slate-300 text-sm">Reduced Paper & Plastic Waste</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="w-6 h-6 rounded-full bg-indigo-500/20 flex items-center justify-center">
+                                <i data-lucide="check" class="w-4 h-4 text-indigo-400"></i>
+                            </div>
+                            <span class="text-slate-300 text-sm">Peer-to-Peer Academic Support</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="w-6 h-6 rounded-full bg-indigo-500/20 flex items-center justify-center">
+                                <i data-lucide="check" class="w-4 h-4 text-indigo-400"></i>
+                            </div>
+                            <span class="text-slate-300 text-sm">Transparent Virtual Ledger System</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="relative">
+                    <div class="aspect-square rounded-3xl bg-gradient-to-br from-indigo-500/20 to-purple-500/20 flex items-center justify-center">
+                        <i data-lucide="globe" class="w-32 h-32 text-indigo-400/20"></i>
+                        <span class="text-8xl absolute">♻️</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

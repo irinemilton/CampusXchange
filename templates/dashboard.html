@@ -20,6 +20,25 @@
             </a>
         </div>
 
+        <!-- ⚠️ Low Balance Alert -->
+        {% if current_user.CreditBalance < 20 %}
+        <div class="mb-8 glass rounded-3xl p-6 border border-amber-500/10 flex flex-col sm:flex-row items-center gap-6 relative overflow-hidden group" data-animate>
+            <div class="absolute inset-0 bg-gradient-to-r from-amber-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <div class="w-14 h-14 rounded-2xl bg-amber-500/10 flex items-center justify-center flex-shrink-0 animate-pulse">
+                <i data-lucide="alert-triangle" class="w-7 h-7 text-amber-500"></i>
+            </div>
+            <div class="flex-1 text-center sm:text-left relative z-10">
+                <h3 class="text-white font-bold mb-1">Low Credit Balance</h3>
+                <p class="text-slate-400 text-sm leading-relaxed">
+                    You only have <span class="text-amber-400 font-bold">💎 {{ current_user.CreditBalance }} credits</span> left. List more items to earn credits and keep trading!
+                </p>
+            </div>
+            <a href="{{ url_for('new_item') }}" class="px-6 py-3 rounded-2xl bg-amber-500 text-black text-sm font-bold hover:bg-amber-400 transition-all shadow-xl shadow-amber-500/20 whitespace-nowrap">
+                List New Item
+            </a>
+        </div>
+        {% endif %}
+
         <!-- ═══ Stats Cards ═══ -->
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10" data-animate>
             <!-- Credit Balance -->

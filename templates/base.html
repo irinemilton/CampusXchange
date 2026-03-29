@@ -360,6 +360,7 @@
                 <div class="hidden md:flex items-center gap-1">
                     <a href="{{ url_for('index') }}" class="nav-link px-4 py-2 text-sm font-medium rounded-lg hover:bg-white/5 {% if request.endpoint == 'index' %}text-white active{% else %}text-slate-300 hover:text-white{% endif %}">Home</a>
                     <a href="{{ url_for('marketplace') }}" class="nav-link px-4 py-2 text-sm font-medium rounded-lg hover:bg-white/5 {% if request.endpoint == 'marketplace' %}text-white active{% else %}text-slate-300 hover:text-white{% endif %}">Marketplace</a>
+                    <a href="{{ url_for('about') }}" class="nav-link px-4 py-2 text-sm font-medium rounded-lg hover:bg-white/5 {% if request.endpoint == 'about' %}text-white active{% else %}text-slate-300 hover:text-white{% endif %}">How it Works</a>
                     <a href="{{ url_for('leaderboard') }}" class="nav-link px-4 py-2 text-sm font-medium rounded-lg hover:bg-white/5 {% if request.endpoint == 'leaderboard' %}text-white active{% else %}text-slate-300 hover:text-white{% endif %}">🏆 Leaderboard</a>
                     {% if current_user.is_authenticated %}
                     <a href="{{ url_for('dashboard') }}" class="nav-link px-4 py-2 text-sm font-medium rounded-lg hover:bg-white/5 {% if request.endpoint == 'dashboard' %}text-white active{% else %}text-slate-300 hover:text-white{% endif %} relative">
@@ -445,6 +446,7 @@
             <div class="px-4 py-3 space-y-1">
                 <a href="{{ url_for('index') }}" class="block px-3 py-2 text-sm text-slate-300 hover:text-white hover:bg-white/5 rounded-lg">Home</a>
                 <a href="{{ url_for('marketplace') }}" class="block px-3 py-2 text-sm text-slate-300 hover:text-white hover:bg-white/5 rounded-lg">Marketplace</a>
+                <a href="{{ url_for('about') }}" class="block px-3 py-2 text-sm text-slate-300 hover:text-white hover:bg-white/5 rounded-lg">ℹ️ How it Works</a>
                 <a href="{{ url_for('leaderboard') }}" class="block px-3 py-2 text-sm text-slate-300 hover:text-white hover:bg-white/5 rounded-lg">🏆 Leaderboard</a>
                 {% if current_user.is_authenticated %}
                 <a href="{{ url_for('dashboard') }}" class="block px-3 py-2 text-sm text-slate-300 hover:text-white hover:bg-white/5 rounded-lg flex items-center justify-between">
@@ -602,6 +604,8 @@
             });
         });
     </script>
+
+    <script>
         // Initialize Lucide icons
         lucide.createIcons();
 

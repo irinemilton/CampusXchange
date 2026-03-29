@@ -5,6 +5,7 @@ Main Flask Application — MySQL Backend
 """
 
 from datetime import datetime
+import random
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from models import db, Student, Category, Item, ExchangeTransaction, CreditLedger
@@ -237,12 +238,19 @@ def new_item():
 @app.route('/items/<int:item_id>')
 def item_detail(item_id):
     item = Item.query.get_or_404(item_id)
-    related_items = Item.query.filter(
+    
+    # Increment view count
+    item.ViewCount = (item.ViewCount or 0) + 1
+    db.session.commit()
+
+    # Get similar items (same category, different item, available)
+    similar_items = Item.query.filter(
         Item.CategoryID == item.CategoryID,
         Item.ItemID != item.ItemID,
         Item.Status == 'Available'
-    ).limit(4).all()
-    return render_template('item_detail.html', item=item, related_items=related_items)
+    ).limit(3).all()
+    
+    return render_template('item_detail.html', item=item, similar_items=similar_items)
 
 
 # ── Request Exchange ─────────────────────────────────────────
@@ -563,10 +571,23 @@ def edit_item(item_id):
     return render_template('edit_item.html', item=item, categories=categories)
 
 
+# ── How it Works (About Page) ────────────────────────────────
+@app.route('/about')
+def about():
+    return render_template('how_it_works.html')
+
+
 # ── Profile Page ─────────────────────────────────────────────
-@app.route('/profile')
+@app.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
+    if request.method == 'POST':
+        bio = request.form.get('bio', '').strip()
+        current_user.Bio = bio
+        db.session.commit()
+        flash('Profile updated successfully!', 'success')
+        return redirect(url_for('profile'))
+
     my_items = Item.query.filter_by(Owner_StudentID=current_user.StudentID).all()
 
     completed_given = ExchangeTransaction.query.filter_by(
@@ -595,6 +616,39 @@ def profile():
                            completed_received=completed_received,
                            credits_earned=credits_earned,
                            credits_spent=credits_spent)
+
+
+# ── Admin adjustment ─────────────────────────────────────────
+@app.route('/admin/adjust-balance', methods=['POST'])
+@login_required
+def adjust_balance():
+    if current_user.Email not in ADMIN_EMAILS and current_user.StudentID != 1:
+        flash('Unauthorized.', 'error')
+        return redirect(url_for('index'))
+
+    student_id = request.form.get('student_id', type=int)
+    amount = request.form.get('amount', type=int)
+    adj_type = request.form.get('type')  # 'add' or 'subtract'
+
+    student = Student.query.get_or_404(student_id)
+    if adj_type == 'add':
+        student.CreditBalance += amount
+    else:
+        student.CreditBalance = max(0, student.CreditBalance - amount)
+    
+    db.session.commit()
+    flash(f"Adjusted balance for {student.Name} by {amount} credits.", "success")
+    return redirect(url_for('admin'))
+
+
+# ── Error Handlers ───────────────────────────────────────────
+@app.errorhandler(404)
+def error_404(e):
+    return render_template('errors/404.html'), 404
+
+@app.errorhandler(500)
+def error_500(e):
+    return render_template('errors/500.html'), 500
 
 
 # ══════════════════════════════════════════════════════════════

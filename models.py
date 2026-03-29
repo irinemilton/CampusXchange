@@ -80,6 +80,7 @@ class Item(db.Model):
     Description = db.Column(db.Text, nullable=True)
     CreditValue = db.Column(db.Integer, nullable=False)
     Status = db.Column(db.Enum('Available', 'Requested', 'Exchanged'), default='Available')
+    Condition = db.Column(db.Enum('New', 'Like New', 'Good', 'Fair'), default='Good')
     DateListed = db.Column(db.DateTime, default=datetime.utcnow)
 
     # Foreign Keys

@@ -360,8 +360,14 @@
                 <div class="hidden md:flex items-center gap-1">
                     <a href="{{ url_for('index') }}" class="nav-link px-4 py-2 text-sm font-medium rounded-lg hover:bg-white/5 {% if request.endpoint == 'index' %}text-white active{% else %}text-slate-300 hover:text-white{% endif %}">Home</a>
                     <a href="{{ url_for('marketplace') }}" class="nav-link px-4 py-2 text-sm font-medium rounded-lg hover:bg-white/5 {% if request.endpoint == 'marketplace' %}text-white active{% else %}text-slate-300 hover:text-white{% endif %}">Marketplace</a>
+                    <a href="{{ url_for('leaderboard') }}" class="nav-link px-4 py-2 text-sm font-medium rounded-lg hover:bg-white/5 {% if request.endpoint == 'leaderboard' %}text-white active{% else %}text-slate-300 hover:text-white{% endif %}">🏆 Leaderboard</a>
                     {% if current_user.is_authenticated %}
-                    <a href="{{ url_for('dashboard') }}" class="nav-link px-4 py-2 text-sm font-medium rounded-lg hover:bg-white/5 {% if request.endpoint == 'dashboard' %}text-white active{% else %}text-slate-300 hover:text-white{% endif %}">Dashboard</a>
+                    <a href="{{ url_for('dashboard') }}" class="nav-link px-4 py-2 text-sm font-medium rounded-lg hover:bg-white/5 {% if request.endpoint == 'dashboard' %}text-white active{% else %}text-slate-300 hover:text-white{% endif %} relative">
+                        Dashboard
+                        {% if pending_count > 0 %}
+                        <span class="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-red-500 text-white text-[10px] font-bold flex items-center justify-center">{{ pending_count }}</span>
+                        {% endif %}
+                    </a>
                     <a href="{{ url_for('transactions') }}" class="nav-link px-4 py-2 text-sm font-medium rounded-lg hover:bg-white/5 {% if request.endpoint == 'transactions' %}text-white active{% else %}text-slate-300 hover:text-white{% endif %}">History</a>
                     {% endif %}
                 </div>
@@ -388,10 +394,17 @@
                                 <p class="text-xs text-slate-400">{{ current_user.Email }}</p>
                             </div>
                             <a href="{{ url_for('dashboard') }}" class="flex items-center gap-3 px-3 py-2 text-sm text-slate-300 hover:text-white hover:bg-white/5 rounded-xl transition-all">
-                                <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Dashboard
+                                <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+                                Dashboard
+                                {% if pending_count > 0 %}
+                                <span class="ml-auto px-1.5 py-0.5 rounded-full bg-red-500 text-white text-[10px] font-bold">{{ pending_count }}</span>
+                                {% endif %}
                             </a>
                             <a href="{{ url_for('profile') }}" class="flex items-center gap-3 px-3 py-2 text-sm text-slate-300 hover:text-white hover:bg-white/5 rounded-xl transition-all">
                                 <i data-lucide="user-circle" class="w-4 h-4"></i> My Profile
+                            </a>
+                            <a href="{{ url_for('leaderboard') }}" class="flex items-center gap-3 px-3 py-2 text-sm text-slate-300 hover:text-white hover:bg-white/5 rounded-xl transition-all">
+                                <i data-lucide="trophy" class="w-4 h-4 text-amber-400"></i> Leaderboard
                             </a>
                             <a href="{{ url_for('new_item') }}" class="flex items-center gap-3 px-3 py-2 text-sm text-slate-300 hover:text-white hover:bg-white/5 rounded-xl transition-all">
                                 <i data-lucide="plus-circle" class="w-4 h-4"></i> List Item
@@ -399,6 +412,11 @@
                             <a href="{{ url_for('transactions') }}" class="flex items-center gap-3 px-3 py-2 text-sm text-slate-300 hover:text-white hover:bg-white/5 rounded-xl transition-all">
                                 <i data-lucide="receipt" class="w-4 h-4"></i> Transactions
                             </a>
+                            {% if current_user.StudentID == 1 %}
+                            <a href="{{ url_for('admin') }}" class="flex items-center gap-3 px-3 py-2 text-sm text-amber-400 hover:text-amber-300 hover:bg-amber-500/10 rounded-xl transition-all">
+                                <i data-lucide="shield" class="w-4 h-4"></i> Admin Panel
+                            </a>
+                            {% endif %}
                             <hr class="border-white/10 my-2">
                             <a href="{{ url_for('logout') }}" class="flex items-center gap-3 px-3 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-xl transition-all">
                                 <i data-lucide="log-out" class="w-4 h-4"></i> Sign Out
@@ -427,8 +445,12 @@
             <div class="px-4 py-3 space-y-1">
                 <a href="{{ url_for('index') }}" class="block px-3 py-2 text-sm text-slate-300 hover:text-white hover:bg-white/5 rounded-lg">Home</a>
                 <a href="{{ url_for('marketplace') }}" class="block px-3 py-2 text-sm text-slate-300 hover:text-white hover:bg-white/5 rounded-lg">Marketplace</a>
+                <a href="{{ url_for('leaderboard') }}" class="block px-3 py-2 text-sm text-slate-300 hover:text-white hover:bg-white/5 rounded-lg">🏆 Leaderboard</a>
                 {% if current_user.is_authenticated %}
-                <a href="{{ url_for('dashboard') }}" class="block px-3 py-2 text-sm text-slate-300 hover:text-white hover:bg-white/5 rounded-lg">Dashboard</a>
+                <a href="{{ url_for('dashboard') }}" class="block px-3 py-2 text-sm text-slate-300 hover:text-white hover:bg-white/5 rounded-lg flex items-center justify-between">
+                    Dashboard
+                    {% if pending_count > 0 %}<span class="px-1.5 py-0.5 rounded-full bg-red-500 text-white text-[10px] font-bold">{{ pending_count }}</span>{% endif %}
+                </a>
                 <a href="{{ url_for('profile') }}" class="block px-3 py-2 text-sm text-slate-300 hover:text-white hover:bg-white/5 rounded-lg">My Profile</a>
                 <a href="{{ url_for('transactions') }}" class="block px-3 py-2 text-sm text-slate-300 hover:text-white hover:bg-white/5 rounded-lg">History</a>
                 <a href="{{ url_for('new_item') }}" class="block px-3 py-2 text-sm text-slate-300 hover:text-white hover:bg-white/5 rounded-lg">List Item</a>
@@ -535,7 +557,51 @@
     </footer>
 
     <!-- ═══ SCRIPTS ═══ -->
+    <!-- ═══ Global Confirm Modal ═══ -->
+    <div id="confirm-modal" class="fixed inset-0 z-[200] flex items-center justify-center p-4 hidden">
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick="closeConfirmModal()"></div>
+        <div class="relative glass rounded-3xl p-8 max-w-sm w-full">
+            <div class="text-center">
+                <div id="confirm-modal-icon" class="text-4xl mb-4">⚠️</div>
+                <h3 id="confirm-modal-title" class="font-display text-lg font-bold text-white mb-2">Are you sure?</h3>
+                <p id="confirm-modal-msg" class="text-sm text-slate-400 mb-6">This action cannot be undone.</p>
+                <div class="flex gap-3">
+                    <button onclick="closeConfirmModal()" class="flex-1 py-3 rounded-xl glass text-sm font-medium text-slate-300 hover:text-white hover:bg-white/5 transition-all">Cancel</button>
+                    <button id="confirm-modal-ok" class="flex-1 py-3 rounded-xl bg-red-500/20 border border-red-500/30 text-sm font-semibold text-red-400 hover:bg-red-500/30 transition-all">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
+        function showConfirmModal(opts) {
+            document.getElementById('confirm-modal-title').textContent = opts.title || 'Are you sure?';
+            document.getElementById('confirm-modal-msg').textContent = opts.message || 'This action cannot be undone.';
+            document.getElementById('confirm-modal-icon').textContent = opts.icon || '⚠️';
+            document.getElementById('confirm-modal').classList.remove('hidden');
+            document.getElementById('confirm-modal-ok').onclick = function() {
+                closeConfirmModal();
+                if (opts.onConfirm) opts.onConfirm();
+            };
+        }
+        function closeConfirmModal() {
+            document.getElementById('confirm-modal').classList.add('hidden');
+        }
+        // Replace all data-confirm forms
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('form[data-confirm]').forEach(function(form) {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    showConfirmModal({
+                        title: form.dataset.confirmTitle || 'Are you sure?',
+                        message: form.dataset.confirm,
+                        icon: form.dataset.confirmIcon || '🗑️',
+                        onConfirm: function() { form.submit(); }
+                    });
+                });
+            });
+        });
+    </script>
         // Initialize Lucide icons
         lucide.createIcons();
 

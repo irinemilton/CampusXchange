@@ -135,6 +135,21 @@
                     </div>
                 </div>
 
+                <!-- Condition Badge -->
+                {% if item.Condition %}
+                <div class="flex items-center gap-2">
+                    <span class="text-xs text-slate-400">Condition:</span>
+                    <span class="px-2.5 py-1 rounded-lg text-xs font-semibold glass-light
+                        {% if item.Condition == 'New' %}text-emerald-400
+                        {% elif item.Condition == 'Like New' %}text-indigo-400
+                        {% elif item.Condition == 'Good' %}text-amber-400
+                        {% else %}text-orange-400{% endif %}">
+                        {% if item.Condition == 'New' %}🟢{% elif item.Condition == 'Like New' %}🔵{% elif item.Condition == 'Good' %}🟡{% else %}🟠{% endif %}
+                        {{ item.Condition }}
+                    </span>
+                </div>
+                {% endif %}
+
                 <!-- Action Buttons -->
                 {% if current_user.is_authenticated %}
                     {% if item.Status == 'Available' and item.Owner_StudentID != current_user.StudentID %}

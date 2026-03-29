@@ -202,6 +202,7 @@ def new_item():
         description = request.form.get('description')
         credit_value = request.form.get('credit_value', type=int)
         category_id = request.form.get('category_id', type=int)
+        condition = request.form.get('condition', 'Good')
 
         if not all([title, credit_value, category_id]):
             flash('Title, credit value, and category are required.', 'error')
@@ -213,7 +214,8 @@ def new_item():
             CreditValue=credit_value,
             CategoryID=category_id,
             Owner_StudentID=current_user.StudentID,
-            Status='Available'
+            Status='Available',
+            Condition=condition
         )
         db.session.add(item)
         db.session.commit()
@@ -420,6 +422,79 @@ def api_stats():
         'exchanges': ExchangeTransaction.query.filter_by(Status='Completed').count(),
         'total_credits': db.session.query(db.func.sum(Student.CreditBalance)).scalar() or 0,
     })
+
+
+# ── Context Processor: Notification Badge ────────────────────
+@app.context_processor
+def inject_pending_count():
+    if current_user.is_authenticated:
+        count = ExchangeTransaction.query.filter_by(
+            Receiver_StudentID=current_user.StudentID,
+            Status='Pending'
+        ).count()
+        return {'pending_count': count}
+    return {'pending_count': 0}
+
+
+# ── Leaderboard ───────────────────────────────────────────────
+@app.route('/leaderboard')
+def leaderboard():
+    top_earners = db.session.query(
+        Student,
+        db.func.coalesce(db.func.sum(CreditLedger.Amount), 0).label('total_earned'),
+        db.func.count(ExchangeTransaction.TransactionID).label('exchange_count')
+    ).outerjoin(
+        CreditLedger,
+        (CreditLedger.StudentID == Student.StudentID) & (CreditLedger.TransactionType == 'Credit')
+    ).outerjoin(
+        ExchangeTransaction,
+        (ExchangeTransaction.Giver_StudentID == Student.StudentID) & (ExchangeTransaction.Status == 'Completed')
+    ).group_by(Student.StudentID).order_by(
+        db.text('total_earned DESC')
+    ).limit(10).all()
+
+    total_exchanges = ExchangeTransaction.query.filter_by(Status='Completed').count()
+    total_items = Item.query.count()
+    total_students = Student.query.count()
+
+    return render_template('leaderboard.html',
+                           top_earners=top_earners,
+                           total_exchanges=total_exchanges,
+                           total_items=total_items,
+                           total_students=total_students)
+
+
+# ── Admin Dashboard ───────────────────────────────────────────
+ADMIN_EMAILS = {'admin@campus.edu.in', 'admin@campusxchange.edu'}
+
+@app.route('/admin')
+@login_required
+def admin():
+    if current_user.Email not in ADMIN_EMAILS and current_user.StudentID != 1:
+        flash('Admin access only.', 'error')
+        return redirect(url_for('index'))
+
+    students = Student.query.order_by(Student.StudentID.desc()).all()
+    items = Item.query.order_by(Item.ItemID.desc()).all()
+    transactions = ExchangeTransaction.query.order_by(
+        ExchangeTransaction.TransactionDate.desc()
+    ).limit(50).all()
+
+    stats = {
+        'total_students': len(students),
+        'total_items': len(items),
+        'available_items': sum(1 for i in items if i.Status == 'Available'),
+        'completed_exchanges': ExchangeTransaction.query.filter_by(Status='Completed').count(),
+        'pending_exchanges': ExchangeTransaction.query.filter_by(Status='Pending').count(),
+        'total_credits_in_system': db.session.query(db.func.sum(Student.CreditBalance)).scalar() or 0,
+    }
+
+    return render_template('admin.html',
+                           students=students,
+                           items=items,
+                           transactions=transactions,
+                           stats=stats)
+
 
 
 # ── Delete Item ──────────────────────────────────────────────

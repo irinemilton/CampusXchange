@@ -1,0 +1,184 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Panel{% endblock %}
+
+{% block content %}
+<section class="py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+        <!-- Header -->
+        <div class="flex items-center justify-between mb-10" data-animate>
+            <div>
+                <h1 class="font-display text-3xl font-bold text-white flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center">
+                        <i data-lucide="shield" class="w-5 h-5 text-white"></i>
+                    </div>
+                    Admin Panel
+                </h1>
+                <p class="text-slate-400 text-sm mt-1">Platform overview and management</p>
+            </div>
+            <span class="px-3 py-1.5 rounded-full glass text-xs text-amber-400 border border-amber-500/20 flex items-center gap-1.5">
+                <i data-lucide="shield-check" class="w-3 h-3"></i> Admin Access
+            </span>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="grid grid-cols-2 lg:grid-cols-3 gap-4 mb-10" data-animate>
+            <div class="glass rounded-2xl p-5">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="w-8 h-8 rounded-xl bg-indigo-500/10 flex items-center justify-center">
+                        <i data-lucide="users" class="w-4 h-4 text-indigo-400"></i>
+                    </div>
+                    <p class="text-xs text-slate-400">Total Students</p>
+                </div>
+                <p class="text-2xl font-display font-bold text-white">{{ stats.total_students }}</p>
+            </div>
+            <div class="glass rounded-2xl p-5">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="w-8 h-8 rounded-xl bg-purple-500/10 flex items-center justify-center">
+                        <i data-lucide="package" class="w-4 h-4 text-purple-400"></i>
+                    </div>
+                    <p class="text-xs text-slate-400">Total Items</p>
+                </div>
+                <p class="text-2xl font-display font-bold text-white">{{ stats.total_items }}
+                    <span class="text-sm font-normal text-emerald-400">({{ stats.available_items }} available)</span>
+                </p>
+            </div>
+            <div class="glass rounded-2xl p-5">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="w-8 h-8 rounded-xl bg-emerald-500/10 flex items-center justify-center">
+                        <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400"></i>
+                    </div>
+                    <p class="text-xs text-slate-400">Completed Exchanges</p>
+                </div>
+                <p class="text-2xl font-display font-bold text-white">{{ stats.completed_exchanges }}</p>
+            </div>
+            <div class="glass rounded-2xl p-5">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="w-8 h-8 rounded-xl bg-amber-500/10 flex items-center justify-center">
+                        <i data-lucide="clock" class="w-4 h-4 text-amber-400"></i>
+                    </div>
+                    <p class="text-xs text-slate-400">Pending Exchanges</p>
+                </div>
+                <p class="text-2xl font-display font-bold text-white">{{ stats.pending_exchanges }}</p>
+            </div>
+            <div class="glass rounded-2xl p-5 col-span-2 lg:col-span-2">
+                <div class="flex items-center gap-3 mb-2">
+                    <div class="w-8 h-8 rounded-xl bg-emerald-500/10 flex items-center justify-center">
+                        <i data-lucide="gem" class="w-4 h-4 text-emerald-400"></i>
+                    </div>
+                    <p class="text-xs text-slate-400">Total Credits in System</p>
+                </div>
+                <p class="text-2xl font-display font-bold text-emerald-400">💎 {{ stats.total_credits_in_system }}</p>
+            </div>
+        </div>
+
+        <div class="grid lg:grid-cols-2 gap-8">
+
+            <!-- Students Table -->
+            <div class="glass rounded-3xl overflow-hidden" data-animate>
+                <div class="p-5 border-b border-white/5 flex items-center gap-2">
+                    <i data-lucide="users" class="w-4 h-4 text-indigo-400"></i>
+                    <h2 class="font-display font-semibold text-white">Registered Students</h2>
+                    <span class="ml-auto text-xs text-slate-500">{{ students|length }}</span>
+                </div>
+                <div class="divide-y divide-white/5 max-h-80 overflow-y-auto">
+                    {% for s in students %}
+                    <div class="px-5 py-3 flex items-center gap-3 hover:bg-white/[0.02]">
+                        <div class="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-500/40 to-purple-600/40 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">
+                            {{ s.Name[0].upper() }}
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-sm font-medium text-white truncate">{{ s.Name }}</p>
+                            <p class="text-xs text-slate-500 truncate">{{ s.Email }}</p>
+                        </div>
+                        <div class="text-right flex-shrink-0">
+                            <p class="text-sm font-bold text-emerald-400">💎 {{ s.CreditBalance }}</p>
+                            <p class="text-xs text-slate-600">#{{ s.StudentID }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Items Table -->
+            <div class="glass rounded-3xl overflow-hidden" data-animate>
+                <div class="p-5 border-b border-white/5 flex items-center gap-2">
+                    <i data-lucide="package" class="w-4 h-4 text-purple-400"></i>
+                    <h2 class="font-display font-semibold text-white">All Items</h2>
+                    <span class="ml-auto text-xs text-slate-500">{{ items|length }}</span>
+                </div>
+                <div class="divide-y divide-white/5 max-h-80 overflow-y-auto">
+                    {% for item in items %}
+                    <div class="px-5 py-3 flex items-center gap-3 hover:bg-white/[0.02]">
+                        <div class="flex-1 min-w-0">
+                            <a href="{{ url_for('item_detail', item_id=item.ItemID) }}" class="text-sm font-medium text-white hover:text-indigo-300 transition-colors truncate block">{{ item.Title }}</a>
+                            <p class="text-xs text-slate-500">{{ item.category.CategoryName if item.category else '—' }} · {{ item.owner.Name if item.owner else '—' }}</p>
+                        </div>
+                        <div class="text-right flex-shrink-0">
+                            <span class="text-xs font-medium px-2 py-0.5 rounded-lg
+                                {% if item.Status == 'Available' %}badge-available
+                                {% elif item.Status == 'Requested' %}badge-requested
+                                {% else %}badge-exchanged{% endif %}">
+                                {{ item.Status }}
+                            </span>
+                            <p class="text-xs text-emerald-400 mt-1">💎 {{ item.CreditValue }}</p>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Transactions -->
+        <div class="mt-8 glass rounded-3xl overflow-hidden" data-animate>
+            <div class="p-5 border-b border-white/5 flex items-center gap-2">
+                <i data-lucide="repeat" class="w-4 h-4 text-emerald-400"></i>
+                <h2 class="font-display font-semibold text-white">Recent Transactions</h2>
+                <span class="ml-auto text-xs text-slate-500">Last 50</span>
+            </div>
+            {% if transactions %}
+            <div class="divide-y divide-white/5">
+                {% for txn in transactions %}
+                <div class="px-5 py-4 flex items-center gap-4 hover:bg-white/[0.02]">
+                    <div class="w-8 h-8 rounded-xl flex-shrink-0 flex items-center justify-center
+                        {% if txn.Status == 'Completed' %}bg-emerald-500/10
+                        {% elif txn.Status == 'Pending' %}bg-amber-500/10
+                        {% else %}bg-red-500/10{% endif %}">
+                        {% if txn.Status == 'Completed' %}
+                        <i data-lucide="check-circle-2" class="w-4 h-4 text-emerald-400"></i>
+                        {% elif txn.Status == 'Pending' %}
+                        <i data-lucide="clock" class="w-4 h-4 text-amber-400"></i>
+                        {% else %}
+                        <i data-lucide="x-circle" class="w-4 h-4 text-red-400"></i>
+                        {% endif %}
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-medium text-white truncate">{{ txn.item.Title if txn.item else '—' }}</p>
+                        <p class="text-xs text-slate-500">
+                            {{ txn.giver.Name if txn.giver else '?' }} → {{ txn.receiver.Name if txn.receiver else '?' }}
+                        </p>
+                    </div>
+                    <div class="text-right flex-shrink-0">
+                        <span class="text-xs font-medium px-2 py-0.5 rounded-lg
+                            {% if txn.Status == 'Completed' %}badge-completed
+                            {% elif txn.Status == 'Pending' %}badge-pending
+                            {% else %}badge-cancelled{% endif %}">{{ txn.Status }}</span>
+                        <p class="text-xs text-slate-500 mt-1">{{ txn.TransactionDate.strftime('%b %d') if txn.TransactionDate else '' }}</p>
+                    </div>
+                    <div class="text-right flex-shrink-0">
+                        <p class="text-sm font-bold text-emerald-400">💎 {{ txn.item.CreditValue if txn.item else 0 }}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="p-12 text-center">
+                <p class="text-slate-500 text-sm">No transactions yet</p>
+            </div>
+            {% endif %}
+        </div>
+
+    </div>
+</section>
+{% endblock %}

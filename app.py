@@ -4,10 +4,12 @@ Campus Circular Economy & Barter Exchange
 Main Flask Application — MySQL Backend
 """
 
-from datetime import datetime
+from datetime import datetime, timedelta
 import random
+import secrets
 from flask import Flask, render_template, request, redirect, url_for, flash, jsonify
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
+from flask_mail import Mail, Message
 from flask_wtf.csrf import CSRFProtect
 from models import db, Student, Category, Item, ExchangeTransaction, CreditLedger
 from config import Config
@@ -22,6 +24,7 @@ app.config.from_object(Config)
 
 db.init_app(app)
 csrf = CSRFProtect(app)
+mail = Mail(app)
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -157,6 +160,109 @@ def logout():
     logout_user()
     flash('You have been logged out.', 'info')
     return redirect(url_for('index'))
+
+
+# ── Forgot Password ────────────────────────────────────────────────────────
+@app.route('/forgot-password', methods=['GET', 'POST'])
+def forgot_password():
+    if current_user.is_authenticated:
+        return redirect(url_for('dashboard'))
+
+    if request.method == 'POST':
+        email = request.form.get('email', '').strip().lower()
+        student = Student.query.filter_by(Email=email).first()
+
+        # Always show the same message to avoid leaking registered emails
+        flash('If that email is registered, a password reset link has been sent.', 'info')
+
+        if student:
+            # Generate a secure random token
+            token = secrets.token_urlsafe(32)
+            student.PasswordResetToken = token
+            student.PasswordResetExpiry = datetime.utcnow() + timedelta(seconds=app.config['PASSWORD_RESET_EXPIRY'])
+            db.session.commit()
+
+            # Build the reset URL
+            reset_url = url_for('reset_password', token=token, _external=True)
+
+            # Send email
+            try:
+                msg = Message(
+                    subject='CampusXchange — Password Reset Request',
+                    recipients=[student.Email]
+                )
+                msg.html = f"""
+                <div style="font-family:sans-serif;max-width:520px;margin:auto;background:#0f172a;color:#e2e8f0;padding:32px;border-radius:16px;">
+                    <div style="text-align:center;margin-bottom:24px;">
+                        <span style="font-size:40px;">&#9851;</span>
+                        <h1 style="color:#818cf8;font-size:22px;margin:8px 0 4px;">CampusXchange</h1>
+                        <p style="color:#94a3b8;font-size:13px;margin:0;">Campus Circular Economy Platform</p>
+                    </div>
+                    <h2 style="font-size:18px;margin-bottom:8px;">Hi {student.Name},</h2>
+                    <p style="color:#94a3b8;font-size:14px;line-height:1.6;">
+                        We received a request to reset the password for your account.
+                        Click the button below to set a new password. This link will expire in <strong style="color:#e2e8f0;">30 minutes</strong>.
+                    </p>
+                    <div style="text-align:center;margin:28px 0;">
+                        <a href="{reset_url}"
+                           style="display:inline-block;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;padding:14px 32px;
+                                  border-radius:12px;text-decoration:none;font-weight:600;font-size:15px;">
+                            Reset My Password
+                        </a>
+                    </div>
+                    <p style="color:#64748b;font-size:12px;text-align:center;">
+                        If you didn't request this, you can safely ignore this email.<br>
+                        Your password won't change until you click the link above.
+                    </p>
+                    <hr style="border-color:#1e293b;margin:24px 0;">
+                    <p style="color:#475569;font-size:11px;text-align:center;">CampusXchange &mdash; Built for students, by students.</p>
+                </div>
+                """
+                mail.send(msg)
+            except Exception:
+                app.logger.error(f'Failed to send password reset email to {student.Email}', exc_info=True)
+
+        return redirect(url_for('forgot_password'))
+
+    return render_template('forgot_password.html')
+
+
+# ── Reset Password (via token link) ───────────────────────────────────────
+@app.route('/reset-password/<token>', methods=['GET', 'POST'])
+def reset_password(token):
+    if current_user.is_authenticated:
+        return redirect(url_for('dashboard'))
+
+    student = Student.query.filter_by(PasswordResetToken=token).first()
+
+    # Validate token existence and expiry
+    if not student or student.PasswordResetExpiry is None or student.PasswordResetExpiry < datetime.utcnow():
+        flash('This password reset link is invalid or has expired. Please request a new one.', 'error')
+        return redirect(url_for('forgot_password'))
+
+    if request.method == 'POST':
+        password = request.form.get('password', '')
+        confirm = request.form.get('confirm_password', '')
+
+        if len(password) < 6:
+            flash('Password must be at least 6 characters.', 'error')
+            return redirect(url_for('reset_password', token=token))
+
+        if password != confirm:
+            flash('Passwords do not match.', 'error')
+            return redirect(url_for('reset_password', token=token))
+
+        # Update password and clear the reset token
+        student.set_password(password)
+        student.PasswordResetToken = None
+        student.PasswordResetExpiry = None
+        student.FailedLoginAttempts = 0  # Unlock account if it was locked
+        db.session.commit()
+
+        flash('Your password has been reset successfully! Please log in.', 'success')
+        return redirect(url_for('login'))
+
+    return render_template('reset_password.html', token=token)
 
 
 # ── Dashboard ────────────────────────────────────────────────

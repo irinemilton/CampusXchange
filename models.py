@@ -28,6 +28,8 @@ class Student(UserMixin, db.Model):
     CreditBalance = db.Column(db.Integer, default=0)
     Bio = db.Column(db.Text, nullable=True)
     FailedLoginAttempts = db.Column(db.Integer, default=0)
+    PasswordResetToken = db.Column(db.String(100), nullable=True, unique=True)
+    PasswordResetExpiry = db.Column(db.DateTime, nullable=True)
 
     # Relationships
     items = db.relationship('Item', backref='owner', lazy='dynamic',
